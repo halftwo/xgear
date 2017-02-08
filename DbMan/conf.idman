@@ -1,0 +1,13 @@
+#
+# ./IdMand --xic.conf=conf.idman
+#
+
+xic.Endpoints = @tcp++12114
+
+IdMan.DbSetting = mysql://user:password@127.0.0.1:3306/dev_config
+
+xic.PThreadPool.Server.Size = 4
+xic.PThreadPool.Server.SizeMax = 16
+
+xic.sample.server = 1
+

@@ -1,0 +1,25 @@
+# This file is just a example.
+# DONT use it directly.
+
+Tester @ tcp+localhost+5555
+	@ tcp+localhost+55555
+
+DbMan 	@ tcp+localhost+12321
+
+DbMan#r -lb:random @ tcp+localhost+12321
+	@ tcp+localhost+1221
+
+DbMan#h -lb:hash @ tcp+localhost+12321
+	@ tcp+localhost+1221
+
+DbMan#test @ tcp+localhost+12321
+	@ tcp+localhost+1221
+
+!MCache#1 = 127.0.0.1+11212
+	 = 127.0.0.1+11213
+	 = 127.0.0.1+11214
+
+!MCache#2 = 127.0.0.1+11212 127.0.0.1+11213 127.0.0.1+11214
+
+!Redis = password ^ 127.0.0.1+6379 
+

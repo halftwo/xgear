@@ -1,0 +1,13 @@
+#
+# ./DbMand --xic.conf=conf.dbman
+#
+
+xic.Endpoints = @tcp++12321
+
+DbMan.DbSetting = mysql://user:password@127.0.0.1:3306/dev_config
+DbMan.DbConnection.MaxSize = 6
+
+xic.PThreadPool.Server.Size = 20
+xic.PThreadPool.Server.SizeMax = 100
+xic.PThreadPool.Server.StackSize = 256ki
+

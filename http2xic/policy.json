@@ -1,0 +1,27 @@
+{
+    "version": 1,
+    "locations": {
+        "/echo/": {
+             "mode": 		"bypass",
+             "service":		"Quickie@tcp++9999",
+             "method": 		"echo",
+             "args_type": 	"get_query",
+         },
+
+         "/track/": {
+             "mode": 		"bypass",
+             "service": 	"analytics#kx@++9999",
+             "method": 		"track",
+             "args_type": 	"get_b64",
+         },
+         
+         "/stat/": {
+             "mode": 		"bypass",
+             "service":		"analytics#kx@++9999",
+             "method": 		"http_stat",
+             "args_type": 	"get_query",
+             "oneway": 		true,
+         },
+    }
+}
+

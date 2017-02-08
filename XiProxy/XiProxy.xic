@@ -1,0 +1,67 @@
+
+
+XiProxyCtrl
+==========
+
+=> stats {}
+<= { services^[%s] }
+
+=> getProxyInfo { service^%s }
+<= { service^%s; info^{%s^%x} }
+
+=> clearCache {}
+<= {}
+
+
+
+LCache
+======
+
+=> get { key^%s; ?expire^%i }
+<= { value^%X; ?age^%i }
+
+=> set { key^%s; value^%X }
+<= { ok^%t }
+
+=> remove { key^%s }
+<= { ok^%t }
+
+=> getAll { keys^[%s]; ?expire^%i }
+<= { items^{%s^%X} }
+
+=> plus { key^%s; value^%i; ?expire^%i }
+<= { value^%i }
+
+
+=> remove_answer { s^%s; m^%s; a^{%s^%X} }
+<= { ok^%t }
+
+=> get_answer { s^%s; m^%s; a^{%s^%X} }
+<= { value^%X; ?age^%i }
+
+
+=> remove_mcache { s^%s; k^%s; }
+<= { ok^%t }
+
+=> get_mcache { s^%s; k^%s; }
+<= { ?value^%b; ?age^%i }
+
+
+
+Quickie
+=======
+
+=> time {}
+<= { time^%i; utc^%s; local^%s }
+
+=~ sink {...}
+
+=> echo {...}
+<= {...}
+
+=> hseq { buckets^[%b]; ?weights^[%i]; ?keyhash^%i; ?key^%b; ?keymask^%i; ?num^%i }
+<= { seqs^[%i] }
+
+=> salvo { quests^[ { s^%s; m^%s; a^{%s^%X} } ]; }
+<= { answers^[ { status^%i; a^{%s^%X} } ] }
+

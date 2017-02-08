@@ -1,0 +1,30 @@
+
+
+DbMan
+=====
+
+=> sQuery { ?kind^%s; hintId^%i; sql^%b; ?convert^%t; ?null^%t } C{ ?MASTER^%t }
+<= { converted^%t; affectedRowNumber^%i; ?fields^[%s]; ?rows^[[%x]]; ?insertId^%i; ?info^%s; }
+
+
+=> mQuery { ?kinds^[%s]; ?kind^%s; hintId^%i; sqls^[%b]; ?convert^%t; ?null^%t } C{ ?MASTER^%t }
+<= { converted^%t; results^[ { affectedRowNumber^%i; ?fields^[%s]; ?rows^[[%x]]; ?insertId^%i; ?info^%s; } ]; }
+
+
+=> tableNumber { kind^%s }
+<= { tableNumber^%i }
+
+
+=> xidName { kind^%s }
+<= { xidName^%s }
+
+
+# valid facets: tableNumber, xidName, version, detail
+=> kindInfo { kind^%s; facets^[%s] }
+<= { kind^%s; ?tableNumber^%i; ?xidName^%s; ?version^%i; ?detail^%s; }
+
+
+=> kindVersions { kinds^[%s] }
+<= { kindVersions^{%s^%i} }
+
+

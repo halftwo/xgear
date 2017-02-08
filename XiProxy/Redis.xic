@@ -1,0 +1,50 @@
+
+
+Redis
+=====
+
+#
+# The replies from Redis server can only be BLOB, INTEGER, LIST, STRING or NULL.
+# When the reply is a string, it's a status reply (starts with '+'),
+# or an error reply (starts with '-').
+#
+
+=> _1CALL { key^%s; cmd^[%s; %x; ...] }
+<= { result^%X }
+
+=> _NCALL { key^%s; cmds^[ [%s; %x; ...] ] }
+<= { results^[%X] }
+
+=> _TCALL { key^%s; cmds^[ [%s; %x; ...] ] }
+<= { results^[%X] }
+
+
+# If expire is 0 or not set, it's default 49 days.
+# Set expire to -1 to make it persist (no expire).
+#
+=> set { key^%s; value^%b; ?expire^%i }
+<= { ok^%t }
+
+=> delete { key^%s }
+<= { ok^%t }
+
+=> increment { key^%s; value^%i }
+<= { ok^%t; ?value^%i }
+
+=> decrement { key^%s; value^%i }
+<= { ok^%t; ?value^%i }
+
+=> get { key^%s }
+<= { ?value^%b }
+
+=> getMulti { keys^[%s] }
+<= { values^{%s^%b} }
+
+
+=> whichServer { key^%s }
+<= { real^%s; canonical^%s }
+
+=> allServers {}
+<= { all^[%s]; bad^[%s] }
+
+

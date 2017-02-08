@@ -1,0 +1,44 @@
+
+MCache
+======
+
+=> set { key^%s; value^%b; ?expire^%i; ?nozip^%t }
+<= { ok^%t }
+
+=> replace { key^%s; value^%b; ?expire^%i; ?nozip^%t }
+<= { ok^%t }
+
+=> add { key^%s; value^%b; ?expire^%i; ?nozip^%t }
+<= { ok^%t }
+
+=> append { key^%s; value^%b }
+<= { ok^%t }
+
+=> prepend { key^%s; value^%b }
+<= { ok^%t }
+
+=> cas { key^%s; value^%b; revision^%i; ?expire^%i; ?nozip^%t }
+<= { ok^%t }
+
+=> get { key^%s }
+<= { ?value^%b; ?revision^%i }
+
+=> getMulti { keys^[%s] }
+<= { values^{%s^%b}; revisions^{%s^%i} }
+
+=> delete { key^%s }
+<= { ok^%t }
+
+=> increment { key^%s; value^%i }
+<= { ok^%t; ?value^%i }
+
+=> decrement { key^%s; value^%i }
+<= { ok^%t; ?value^%i }
+
+=> whichServer { key^%s }
+<= { real^%s; canonical^%s }
+
+=> allServers {}
+<= { all^[%s]; bad^[%s] }
+
+

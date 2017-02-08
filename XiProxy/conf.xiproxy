@@ -1,0 +1,29 @@
+
+xic.Endpoints = @tcp++9999
+
+XiProxy.ListFile = list.xiproxy
+
+XiProxy.Service.LogLevel = 1
+XiProxy.Service.UltraSlow = 66666
+XiProxy.Service.Slow = 1000
+XiProxy.Service.RefreshTime = 3600
+
+# DONT set this value above 0 in production environment
+XiProxy.Service.Delay = 0
+
+XiProxy.Cache.NumberMax = 64ki
+XiProxy.Cache.ExpireMax = 86400
+
+xic.timeout.message = 66000
+xic.timeout.close = 5000
+xic.timeout.connect = 3000
+
+xic.PThreadPool.Server.Size = 4
+xic.PThreadPool.Server.SizeMax = 4
+xic.PThreadPool.Server.StackSize = 256ki
+
+xic.PThreadPool.Client.Size = 4
+xic.PThreadPool.Client.SizeMax = 4
+xic.PThreadPool.Client.StackSize = 256ki
+
+xic.passport.secret = secret.xiproxy

@@ -1,0 +1,24 @@
+
+
+DbManCtrl
+=========
+
+=> reloadDBSetting {}
+<= { ok^%t }
+
+
+=> getStat {}
+<= { stat^%s }
+
+
+=> setActive { sid^%i; active^%t }
+<= { ok^%t }
+
+
+=> allKinds {}
+<= { allKinds^%s }
+
+
+=> allServers {}
+<= { allServers^%s }
+

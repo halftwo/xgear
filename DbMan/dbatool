@@ -1,0 +1,153 @@
+#! /bin/env php
+<?php
+
+$cmd_table = array(
+	"new" => cmd_new,
+	"change" => cmd_change,
+	"check" => cmd_check,
+	"reload" => cmd_relad,
+);
+
+$the_program = $argv[0];
+$config_db = NULL;
+
+main($argv);
+
+function main($args)
+{
+	global $config_db;
+	global $cmd_table;
+
+	array_shift($args);
+	$config_db_url = array_shift($args);
+
+	$config_db = db_connect($config_db_url);
+
+	if (count($args) < 1)
+	{
+		usage();
+	}
+
+	$command = $args[0];
+	$func = $cmd_table[$command];
+
+	if (!is_callable($func))
+	{
+		cerr("ERROR: Unknown command `".$command."`");
+		usage();
+	}
+
+	$func($args);
+}
+
+function usage()
+{
+	global $the_program;
+
+	cerr("Usage: ".$the_program." <config_db> <command> [cmd_options] [args]");
+	$usage =<<<EOT
+Available commands:
+    new	        <kind> <table_num> <id_field> <sid-sid> <db_name> <sqlfile>
+    reload
+    change
+    check
+
+EOT;
+	cerr($usage);
+	exit(1);
+}
+
+function cerr($msg)
+{
+	$str = strval($msg);
+	if (substr($str, -1) != "\n")
+	{
+		$str .= "\n";
+	}
+	fwrite(STDERR, $str);
+}
+
+function readpass($prompt)
+{
+	echo $prompt;
+	$fp = fopen("php://stdin", "r");
+	$x = trim(fgets($fp));
+	fclose($fp);
+	return $x;
+}
+
+function db_connect($dburl)
+{
+	$urlpart = parse_url($dburl);
+	$db_host = $urlpart['host'];
+	if (!$db_host)
+	{
+		throw new Exception("db host not given");
+	}
+
+	if ($urlpart['port'])
+	{
+		$db_host .= ":".$urlpart['port'];
+	}
+
+	$db_user = $urlpart['user'];
+	$db_pass = $urlpart['pass'];
+	$db_name = substr($urlpart['path'], 1);
+
+	if ($db_pass == "")
+	{
+		$prompt = "Password for ".$db_user."@".$db_host." : ";
+		$db_pass = readpass($prompt);
+	}
+
+	$db = mysql_connect($db_host, $db_user, $db_pass);
+	if (!$db)
+	{
+		throw new Exception("Failed to connect DB server `".$db_host."`: ".mysql_error());
+	}
+
+	if (!mysql_select_db($db_name))
+	{
+		throw new Exception("Failed to select database `".$db_name."`: ".mysql_error());
+	}
+
+	return $db;
+}
+
+function cmd_new($args)
+{
+	xxx();
+	cerr("TODO: NEW\n");
+}
+
+function cmd_change($args)
+{
+	cerr("TODO: CHANGE\n");
+}
+
+function cmd_check($args)
+{
+	cerr("TODO: CHECK\n");
+}
+
+function cmd_reload($args)
+{
+	cerr("TODO: CHECK\n");
+}
+
+function xxx()
+{
+	global $config_db;
+
+	$server_setting = array();
+	$sql = "select * from server_setting where master_sid = '0'";
+	$result = mysql_query($sql, $config_db);
+	while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+	{
+		$server_setting[intval($row["sid"])] = $row;
+	}
+	mysql_free_result($result);
+}
+
+
+?>

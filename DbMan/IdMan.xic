@@ -1,0 +1,36 @@
+
+IdMan
+=====
+
+=> newId { kind^%s }
+<= { id^%i }
+
+=> newTimeId { kind^%s }
+<= { id^%i }
+
+=> lastId { kind^%s }
+<= { id^%i }
+
+
+
+#
+# The following method after ctrl() will only be successfully called
+# after calling ctrl() method.
+#
+# NB: THESE METHODS ARE NOT FOR NORMAL USE. YOU HAVE BEEN WARNED.
+#
+
+=> ctrl { ?time^%i }
+<= { token^%s }
+
+# Only fields other than last_id will be reloaded from DB.
+#
+=> reload { kind^%s }
+<= { ok^%t }
+
+=> reserveId { kind^%s; num^%i }
+<= { id^%i }
+
+=> resetId { kind^%s; id^%i }
+<= { ok^%t }
+
