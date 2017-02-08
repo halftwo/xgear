@@ -19,7 +19,7 @@ LIB_DBPOOL = libdbpool.a
 
 MYSQL_LIBS = -L/usr/lib64/mysql -lmysqlclient_r 
 
-LIBS = -L../lib -L../knotty/lib -ldlog -lxic -lxs $(MYSQL_LIBS) -lrt
+LIBS = -pthread -L../lib -L../knotty/lib -ldlog -lxic -lxs $(MYSQL_LIBS) -lrt
 
 
 
