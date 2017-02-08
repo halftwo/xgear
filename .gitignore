@@ -1,0 +1,5 @@
+*.o
+*.a
+DbMan/DbMan
+DbMan/IdMan
+XiProxy/XiProxy
