@@ -218,7 +218,7 @@ void MySQLdb::query(ResultCB *cb, const char *sql, size_t size, const char *db_n
 	try {
 		cb->process(_mysql);
 	}
-	catch (std::exception& ex)
+	catch (std::exception& ex_)
 	{
 		XERROR_VAR_CODE_FMT(Error, ex, mysql_errno(_mysql), "host=%s:%d, mysql_error=%s", _host ? _host : "", _port, mysql_error(_mysql));
 		ex.sql = std::string(sql, size);

@@ -3,9 +3,9 @@
 #
 .SUFFIXES: .cpp
 
-CFLAGS = -g -Wall -rdynamic -O2
+CFLAGS = -g -Wall -O2
 
-CXXFLAGS = -g -Wall -rdynamic -O2
+CXXFLAGS = -g -Wall -O2
 
 CXXCPPFLAGS = -I. -I../include -I../knotty -I/usr/local/include
 
@@ -19,7 +19,7 @@ LIB_DBPOOL = libdbpool.a
 
 MYSQL_LIBS = -L/usr/lib64/mysql -lmysqlclient_r 
 
-LIBS = -pthread -L../lib -L../knotty/lib -ldlog -lxic -lxs $(MYSQL_LIBS) -lrt
+LIBS = -rdynamic -pthread -L../lib -L../knotty/lib -ldlog -lxic -lxs $(MYSQL_LIBS) -lrt
 
 
 

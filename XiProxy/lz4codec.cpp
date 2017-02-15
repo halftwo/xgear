@@ -59,7 +59,7 @@ int attempt_lz4_unzip(ostk_t* ostk, const xstr_t& in, xstr_t& out)
 	if (hdr.magic != MAGIC)
 		return -2;
 
-	if (hdr.length < 0 || hdr.length > ZIP_MAX_SIZE)
+	if (hdr.length > ZIP_MAX_SIZE)
 		return -4;
 
 	char *ibuf = (char *)in.data + HEADER_SIZE;

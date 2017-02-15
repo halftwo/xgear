@@ -10,10 +10,10 @@
 
 
 class PolicyManager;
-class Policy;
-class BypassPolicy;
-class StoragePolicy;
-class ThumbnailPolicy;
+struct Policy;
+struct BypassPolicy;
+struct StoragePolicy;
+struct ThumbnailPolicy;
 typedef XPtr<PolicyManager> PolicyManagerPtr;
 typedef XPtr<Policy> PolicyPtr;
 typedef XPtr<BypassPolicy> BypassPolicyPtr;

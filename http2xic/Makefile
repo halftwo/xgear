@@ -4,13 +4,13 @@
 # This project depends on GNU libmicrohttpd
 
 
-CFLAGS = -g -Wall -rdynamic
+CFLAGS = -g -Wall
 
-CXXFLAGS = -g -Wall -rdynamic
+CXXFLAGS = -g -Wall
 
 CPPFLAGS = -I. -I../knotty -D__BUILD_TIME=`date +%s`
 
-LIBS = -pthread -Wl,-static -L../knotty/lib -lxic -ldlog -lxs -Wl,-call_shared -lmicrohttpd -lrt 
+LIBS = -rdynamic -pthread -Wl,-static -L../knotty/lib -lxic -ldlog -lxs -Wl,-call_shared -lmicrohttpd -lrt 
 
 OBJS = Policy.o HttpHandler.o Response.o Http2XicServant.o
 

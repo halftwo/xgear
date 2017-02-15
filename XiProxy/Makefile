@@ -10,11 +10,11 @@ OBJS = XiProxy.o RevServant.o BigServant.o XiServant.o ProxyConfig.o \
 	Redis.o RedisGroup.o RedisClient.o RedisOp.o
 
 
-CXXFLAGS = -g -Wall -rdynamic -O2
+CXXFLAGS = -g -Wall -O2
 
 CPPFLAGS = -I. -I../include -I../knotty
 
-LIBS = -L../lib -L../knotty/lib -lutil -lxic -ldlog -lxs -lrt -lpthread
+LIBS = -rdynamic -pthread -L../lib -L../knotty/lib -lutil -lxic -ldlog -lxs -lrt
 
 
 all: $(EXE)
