@@ -273,8 +273,9 @@ xic::AnswerPtr BigServant::salvo(const xic::QuestPtr& quest, const xic::Current&
 	xic::VDict args = quest->args();
 	xic::VList qs = args.wantVList("quests");
 	CollectorPtr collector(new Collector(current.asynchronous(), qs.size()));
-	xic::ContextBuilder ctx(quest->context());
-	ctx.set("SALVO", true);
+	xic::ContextBuilder ctxBuilder(quest->context());
+	ctxBuilder.set("SALVO", true);
+	xic::ContextPtr ctx = ctxBuilder.build();
 	size_t idx = 0;
 	for (xic::VList::Node node = qs.first(); node; ++node, ++idx)
 	{
@@ -301,7 +302,7 @@ xic::AnswerPtr BigServant::salvo(const xic::QuestPtr& quest, const xic::Current&
 			qw.raw(raw.data, raw.len);
 			xic::QuestPtr q = qw.take();
 			q->setService(s);
-			q->setContext(ctx.build());
+			q->setContext(ctx);
 
 			FakeCurrent fake_current(current, q, collector, idx);
 			answer = srv->process(q, fake_current);
