@@ -173,7 +173,7 @@ class Callback_mget: public RedisResultCallback
 	void _empty_result()
 	{
 		vbs_list_t ls;
-		vbs_list_init(&ls);
+		vbs_list_init(&ls, 0);
 		_callback->values(_keys, ls);
 	}
 

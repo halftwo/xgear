@@ -36,7 +36,7 @@ RedisOperation::RedisOperation(const RedisResultCallbackPtr& callback)
 	_cmd_num = 0;
 	_cmd_iov = NULL;
 	_cmd_iov_count = 0;
-	vbs_list_init(&_replies);
+	vbs_list_init(&_replies, 0);
 	_start_tsc = rdtsc();
 }
 

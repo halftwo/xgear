@@ -406,7 +406,7 @@ int RConnection::read_one_item(int level)
 		LOC_RESET(&_ctx[level+1].loc);
 
 		vbs_data_set_list(&ctx->data, OSTK_ALLOC_ONE(_op->ostk(), vbs_list_t));
-		vbs_list_init(ctx->data.d_list);
+		vbs_list_init(ctx->data.d_list, 0);
 		for (ctx->item_cur = 0; ctx->item_cur < ctx->item_num; ++ctx->item_cur)
 		{
 			LOC_ANCHOR
