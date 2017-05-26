@@ -23,15 +23,12 @@ struct MyMethodTab
 	MyMethodTab();
 	~MyMethodTab();
 
-	NodeType* insert(const xstr_t& name);
+	NodeType* getOrAdd(const xstr_t& name);
 	NodeType* find(const xstr_t& name) const;
 	NodeType* next(const NodeType *node) const;
 
-	void mark(const xstr_t& method, bool on=true) const;
-	void markMany(const xstr_t& methods, bool on=true) const;
-
-	bool logOn() const		{ return _logOn; }
-	void logOn(bool t)		{ _logOn = t; }
+	/* return true if found, else return false */
+	bool mark(const xstr_t& method, bool on) const;
 
 	bool markAll() const		{ return _markAll; }
 	void markAll(bool t)		{ _markAll = t; }
@@ -41,7 +38,6 @@ private:
 	NodeType **_tab;
 	unsigned int _mask;
 	unsigned int _total;
-	bool _logOn;
 	bool _markAll;
 };
 

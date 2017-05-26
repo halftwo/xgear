@@ -20,7 +20,6 @@ MyMethodTab::MyMethodTab()
 	_tab = OSTK_CALLOC(_ostk, NodeType*, slot_num);
 	_mask = slot_num - 1;
 	_total = 0;
-	_logOn = false;
 	_markAll = false;
 }
 
@@ -38,20 +37,19 @@ MyMethodTab::~MyMethodTab()
 	ostk_destroy(_ostk);
 }
 
-MyMethodTab::NodeType* MyMethodTab::insert(const xstr_t& name)
+MyMethodTab::NodeType* MyMethodTab::getOrAdd(const xstr_t& key)
 {
 	NodeType *node;
-	uint32_t hash = jenkins_hash(name.data, name.len, 0);
+	uint32_t hash = jenkins_hash(key.data, key.len, 0);
 	uint32_t slot = (hash & _mask);
-
 	for (node = _tab[slot]; node; node = node->hash_next)
 	{
-		if (node->hash == hash && node->nlen == name.len && memcmp(node->name, name.data, name.len) == 0)
-			return NULL;
+		if (node->hash == hash && node->nlen == key.len && memcmp(node->name, key.data, key.len) == 0)
+			return node;
 	}
 
-	void *p = ostk_alloc(_ostk, sizeof(NodeType) + name.len + 1);
-	node = new(p) NodeType(name);
+	void *p = ostk_alloc(_ostk, sizeof(NodeType) + key.len + 1);
+	node = new(p) NodeType(key);
 	node->hash_next = _tab[slot];
 	_tab[slot] = node;
 	_total++;
@@ -97,21 +95,15 @@ MyMethodTab::NodeType* MyMethodTab::next(const NodeType *node) const
 	return NULL;
 }
 
-void MyMethodTab::mark(const xstr_t& method, bool on) const
+bool MyMethodTab::mark(const xstr_t& method, bool on) const
 {
 	NodeType* node = find(method);
 	if (node)
-		node->mark = on;
-}
-
-void MyMethodTab::markMany(const xstr_t& methods, bool on) const
-{
-	xstr_t tmp = methods;
-	xstr_t xs;
-	while (xstr_token_cstr(&tmp, ", ", &xs))
 	{
-		mark(xs, on);
+		node->mark = on;
+		return true;
 	}
+	return false;
 }
 
 

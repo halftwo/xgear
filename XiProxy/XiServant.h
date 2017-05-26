@@ -29,7 +29,7 @@ public:
 	virtual void getInfo(xic::VDictWriter& dw);
 	void switchProxyLog(xic::AnswerWriter& aw, const xic::QuestPtr& quest);
 
-	void call_end(const xstr_t& method, int usec);
+	void call_end(const xstr_t& method, int usec, bool add);
 	const RCachePtr& rcache() const		{ return _rcache; }
 	const XTimerPtr& timer() const 		{ return _timer; }
 };

@@ -32,9 +32,10 @@ class XiServantCompletion: public xic::Completion
 	uint64_t _start_tsc;
 	RKey _rkey;
 	int _cache;
+	bool _debut;
 public:
-	XiServantCompletion(XiServant *ksrv, const xic::WaiterPtr& waiter, int cache, const RKey& rkey)
-		: _xsrv(ksrv), _waiter(waiter), _rkey(rkey), _cache(cache)
+	XiServantCompletion(XiServant *ksrv, const xic::WaiterPtr& waiter, int cache, const RKey& rkey, bool debut)
+		: _xsrv(ksrv), _waiter(waiter), _rkey(rkey), _cache(cache), _debut(debut)
 	{
 		_start_tsc = rdtsc();
 	}
@@ -74,7 +75,8 @@ void XiServantCompletion::completed(const xic::ResultPtr& result)
 		_xsrv->timer()->addTask(new DelayedResponse(_waiter, answer), xp_delay_msec);
 	}
 
-	_xsrv->call_end(q->method(), used_usec);
+	bool add = _debut && (answer->status() == 0);
+	_xsrv->call_end(q->method(), used_usec, add);
 
 	if (_cache)
 	{
@@ -178,22 +180,23 @@ xic::AnswerPtr XiServant::process(const xic::QuestPtr& quest, const xic::Current
 {
 	xic::CompletionPtr cb;
 	xic::Quest* q = quest.get();
-	bool logOn = _mtab->logOn();
 
-	MyMethodTab::NodeType *node = _mtab->find(q->method());
+	MyMethodTab::NodeType *node = NULL;
+	{
+		Lock lock(*this);
+		node = _mtab->find(q->method());
+	}
+
 	if (node)
 	{
 		xatomic64_inc(&node->ncall);
-		if (logOn && node->mark)
+		if (node->mark)
 			current.logIt(true);
 	}
-	else
-	{
-		node = _mtab->insert(q->method());
-		xatomic64_inc(&node->ncall);
-	}
 
-	if (logOn && _mtab->markAll())
+	bool debut = !node;
+
+	if (_mtab->markAll())
 		current.logIt(true);
 
 	xatomic_inc(&_call_total);
@@ -238,7 +241,7 @@ xic::AnswerPtr XiServant::process(const xic::QuestPtr& quest, const xic::Current
 	
 	no_cache:
 		xatomic_inc(&_call_underway);
-		cb.reset(new XiServantCompletion(this, current.asynchronous(), cache, rkey));
+		cb.reset(new XiServantCompletion(this, current.asynchronous(), cache, rkey, debut));
 	}
 
 	if (_serviceChanged)
@@ -259,7 +262,7 @@ xic::AnswerPtr XiServant::process(const xic::QuestPtr& quest, const xic::Current
 	return xic::ASYNC_ANSWER;
 }
 
-void XiServant::call_end(const xstr_t& method, int usec)
+void XiServant::call_end(const xstr_t& method, int usec, bool add)
 {
 	xatomic_dec(&_call_underway);
 	{
@@ -267,6 +270,12 @@ void XiServant::call_end(const xstr_t& method, int usec)
 		_last_method = make_string(method);
 		_last_time = _engine->time();
 		_last_usec = usec;
+
+		if (add)
+		{
+			MyMethodTab::NodeType *node = _mtab->getOrAdd(method);
+			xatomic64_inc(&node->ncall);
+		}
 	}
 }
 
@@ -308,9 +317,9 @@ void XiServant::getInfo(xic::VDictWriter& dw)
 	dw.kv("last_call_time", last_time ? xp_get_time_str(last_time, buf) : "");
 	dw.kv("last_call_usec", last_usec);
 
-	dw.kv("log_on", _mtab->logOn());
 	dw.kv("mark_all", _mtab->markAll());
 
+	Lock lock(*this);
 	const MyMethodTab::NodeType *node = NULL;
 	xic::VListWriter lw = dw.kvlist("marks");
 	for (node = NULL; (node = _mtab->next(node)) != NULL; )
@@ -330,17 +339,9 @@ void XiServant::getInfo(xic::VDictWriter& dw)
 void XiServant::switchProxyLog(xic::AnswerWriter& aw, const xic::QuestPtr& quest)
 {
 	MyMethodTab::NodeType *node;
-	bool log_on = _mtab->logOn();
 	bool mark_all = _mtab->markAll();
 	xic::VDict args = quest->args();
 	xic::VDict::Node entry;
-
-	entry = args.getNode("log_on");
-	if (entry)
-	{
-		log_on = entry.boolValue();
-		_mtab->logOn(log_on);
-	}
 
 	entry = args.getNode("mark_all");
 	if (entry)
@@ -349,26 +350,23 @@ void XiServant::switchProxyLog(xic::AnswerWriter& aw, const xic::QuestPtr& quest
 		_mtab->markAll(mark_all);
 	}
 
-	std::vector<xstr_t> mark_on = args.getXstrVector("mark_on");
-	for (size_t i = 0; i < mark_on.size(); ++i)
+	std::vector<xstr_t> marks = args.getXstrVector("marks");
+	std::vector<xstr_t> nomarks = args.getXstrVector("nomarks");
+
+	Lock lock(*this);
+	for (size_t i = 0; i < marks.size(); ++i)
 	{
-		const xstr_t& method = mark_on[i];
-		node = _mtab->find(method);
-		if (!node)
-			node = _mtab->insert(method);
+		const xstr_t& method = marks[i];
+		node = _mtab->getOrAdd(method);
 		node->mark = true;
 	}
 
-	std::vector<xstr_t> mark_off = args.getXstrVector("mark_off");
-	for (size_t i = 0; i < mark_off.size(); ++i)
+	for (size_t i = 0; i < nomarks.size(); ++i)
 	{
-		const xstr_t& method = mark_off[i];
-		node = _mtab->find(method);
-		if (node)
-			node->mark = false;
+		const xstr_t& method = nomarks[i];
+		_mtab->mark(method, false);
 	}
 
-	aw.param("log_on", log_on);
 	aw.param("mark_all", mark_all);
 	xic::VListWriter lw = aw.paramVList("marks");
 	for (node = NULL; (node = _mtab->next(node)) != NULL; )
