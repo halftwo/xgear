@@ -315,7 +315,7 @@ void XiServant::getInfo(xic::VDictWriter& dw)
 	xic::VListWriter lw = dw.kvlist("marks");
 	for (node = NULL; (node = _mtab->next(node)) != NULL; )
 	{
-		if (node->mark);
+		if (node->mark)
 			lw.v(node->name);
 	}
 
