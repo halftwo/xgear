@@ -7,7 +7,8 @@ EXE = XiProxy
 OBJS = XiProxy.o RevServant.o BigServant.o XiServant.o ProxyConfig.o \
 	RCache.o Dlog.o LCache.o Quickie.o lz4codec.o \
 	MCache.o Memcache.o MClient.o MOperation.o \
-	Redis.o RedisGroup.o RedisClient.o RedisOp.o
+	Redis.o RedisGroup.o RedisClient.o RedisOp.o \
+	MyMethodTab.o
 
 
 CXXFLAGS = -g -Wall -O2

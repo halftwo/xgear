@@ -385,6 +385,22 @@ xic::AnswerPtr BigServant::getProxyInfo(const xic::QuestPtr& quest, const xic::C
 	return aw;
 }
 
+xic::AnswerPtr BigServant::switchProxyLog(const xic::QuestPtr& quest, const xic::Current& current)
+{
+	xic::QuestReader qr(quest);
+	std::string service = make_string(qr.wantXstr("service"));
+	RevServantPtr srv = find(service, false);
+
+	xic::AnswerWriter aw;
+	if (srv)
+	{
+		XiServantPtr x = XiServantPtr::cast(srv);
+		if (x)
+			x->switchProxyLog(aw, quest);
+	}
+	return aw;
+}
+
 void BigServant::shutdown()
 {
 	_engine->shutdown();

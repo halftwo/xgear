@@ -22,7 +22,7 @@
 #include <map>
 #include <string>
 
-#define XIPROXY_VERSION		"20170520.20170520.2300"
+#define XIPROXY_VERSION		"20170526.20170526.1800"
 
 static char build_info[] = "$build: XiProxy-" XIPROXY_VERSION " "__DATE__" "__TIME__" $";
 
@@ -72,6 +72,10 @@ xic::AnswerPtr XiProxyCtrl::process(const xic::QuestPtr& quest, const xic::Curre
 	else if (xstr_equal_cstr(&method, "getProxyInfo"))
 	{
 		return _bigsrv->getProxyInfo(quest, current);
+	}
+	else if (xstr_equal_cstr(&method, "switchProxyLog"))
+	{
+		return _bigsrv->switchProxyLog(quest, current);
 	}
 	else if (xstr_equal_cstr(&method, "clearCache"))
 	{

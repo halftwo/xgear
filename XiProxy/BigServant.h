@@ -32,6 +32,7 @@ public:
 
 	xic::AnswerPtr stats(const xic::QuestPtr& quest, const xic::Current& current);
 	xic::AnswerPtr getProxyInfo(const xic::QuestPtr& quest, const xic::Current& current);
+	xic::AnswerPtr switchProxyLog(const xic::QuestPtr& quest, const xic::Current& current);
 	void clearCache()		{ _rcache->clear(); }
 	void shutdown();
 

@@ -9,6 +9,9 @@ XiProxyCtrl
 => getProxyInfo { service^%s }
 <= { service^%s; info^{%s^%x} }
 
+=> switchProxyLog { service^%s; ?log_on^%t; ?mark_all^%t; ?mark_on^[%s]; ?mark_off^[%s]; }
+<= { log_on^%t; mark_all^%t; marks^[%s]; }
+
 => clearCache {}
 <= {}
 
