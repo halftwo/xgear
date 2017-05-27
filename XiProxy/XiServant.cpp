@@ -365,7 +365,14 @@ void XiServant::switchProxyLog(xic::AnswerWriter& aw, const xic::QuestPtr& quest
 	for (size_t i = 0; i < nomarks.size(); ++i)
 	{
 		const xstr_t& method = nomarks[i];
-		_mtab->mark(method, false);
+		node = _mtab->find(method);
+		if (node)
+		{
+			if (xatomic64_get(&node->ncall))
+				node->mark = false;
+			else
+				_mtab->remove_node(node);
+		}
 	}
 
 	aw.param("mark_all", mark_all);

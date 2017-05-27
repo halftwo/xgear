@@ -27,14 +27,15 @@ struct MyMethodTab
 	NodeType* find(const xstr_t& name) const;
 	NodeType* next(const NodeType *node) const;
 
+	void remove_node(NodeType *node);
+
 	/* return true if found, else return false */
-	bool mark(const xstr_t& method, bool on) const;
+	bool mark(const xstr_t& method, bool on);
 
 	bool markAll() const		{ return _markAll; }
 	void markAll(bool t)		{ _markAll = t; }
 
 private:
-	ostk_t *_ostk;
 	NodeType **_tab;
 	unsigned int _mask;
 	unsigned int _total;

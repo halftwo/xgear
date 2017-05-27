@@ -1,5 +1,7 @@
 #include "MyMethodTab.h"
+#include "xslib/xsdef.h"
 #include "xslib/jenkins.h"
+#include <assert.h>
 
 
 MyMethodTab::NodeType::NodeType(const xstr_t& key)
@@ -16,8 +18,7 @@ MyMethodTab::NodeType::NodeType(const xstr_t& key)
 MyMethodTab::MyMethodTab()
 {
 	size_t slot_num = 128;
-	_ostk = ostk_create(0);
-	_tab = OSTK_CALLOC(_ostk, NodeType*, slot_num);
+	_tab = XS_CALLOC(NodeType*, slot_num);
 	_mask = slot_num - 1;
 	_total = 0;
 	_markAll = false;
@@ -32,9 +33,10 @@ MyMethodTab::~MyMethodTab()
 		{
 			next = node->hash_next;
 			node->NodeType::~NodeType();
+			free(node);
 		}
 	}
-	ostk_destroy(_ostk);
+	free(_tab);
 }
 
 MyMethodTab::NodeType* MyMethodTab::getOrAdd(const xstr_t& key)
@@ -48,12 +50,33 @@ MyMethodTab::NodeType* MyMethodTab::getOrAdd(const xstr_t& key)
 			return node;
 	}
 
-	void *p = ostk_alloc(_ostk, sizeof(NodeType) + key.len + 1);
+	void *p = malloc(sizeof(NodeType) + key.len + 1);
 	node = new(p) NodeType(key);
 	node->hash_next = _tab[slot];
 	_tab[slot] = node;
-	_total++;
+	++_total;
 	return node;
+}
+
+void MyMethodTab::remove_node(NodeType *the_node)
+{
+	uint32_t slot = (the_node->hash & _mask);
+	NodeType *node, *prev = NULL;
+	for (node = _tab[slot]; node; prev = node, node = node->hash_next)
+	{
+		if (node == the_node)
+		{
+			if (prev)
+				prev->hash_next = node->hash_next;
+			else
+				_tab[slot] = node->hash_next;
+			node->NodeType::~NodeType();
+			free(node);
+			--_total;
+			return;
+		}
+	}
+	assert(!"can't reach here");
 }
 
 MyMethodTab::NodeType* MyMethodTab::find(const xstr_t& key) const
@@ -95,7 +118,7 @@ MyMethodTab::NodeType* MyMethodTab::next(const NodeType *node) const
 	return NULL;
 }
 
-bool MyMethodTab::mark(const xstr_t& method, bool on) const
+bool MyMethodTab::mark(const xstr_t& method, bool on)
 {
 	NodeType* node = find(method);
 	if (node)
