@@ -63,6 +63,7 @@ void XiServantCompletion::completed(const xic::ResultPtr& result)
 {
 	xic::Quest* q = result->quest().get();
 	xic::AnswerPtr answer = result->takeAnswer(false);
+	xic::Answer* a = answer.get();
 	uint64_t current_tsc = rdtsc();
 	int64_t used_usec = (current_tsc - _start_tsc) * 1000000 / cpu_frequency();
 
@@ -75,16 +76,17 @@ void XiServantCompletion::completed(const xic::ResultPtr& result)
 		_xsrv->timer()->addTask(new DelayedResponse(_waiter, answer), xp_delay_msec);
 	}
 
-	bool add = _debut && (answer->status() == 0);
+	int status = a->status();
+	bool add = _debut && (status == 0);
 	_xsrv->call_end(q->method(), used_usec, add);
 
 	if (_cache)
 	{
 		const RCachePtr& rcache = _xsrv->rcache();
-		RData rdata(current_tsc, RD_ANSWER, answer->args_xstr());
+		RData rdata(current_tsc, RD_ANSWER, a->args_xstr());
 		if (rdata)
 		{
-			rdata.setStatus(answer->status());
+			rdata.setStatus(status);
 			rcache->replace(_rkey, rdata);
 		}
 		else
@@ -93,7 +95,6 @@ void XiServantCompletion::completed(const xic::ResultPtr& result)
 		}
 	}
 
-	int status = answer->status();
 	int64_t used_ms = used_usec / 1000;
 	if ((status && xp_log_level > 0) || used_ms >= xp_slow_warning_msec)
 	{
@@ -153,7 +154,7 @@ void XiServantCompletion::completed(const xic::ResultPtr& result)
 				XSTR_P(&client), XSTR_P(&me0), XSTR_P(&me1), XSTR_P(&server),
 				txid, XSTR_P(&service), XSTR_P(&method),
 				&q->context_xstr(),
-				status, &answer->args_xstr());
+				status, &a->args_xstr());
 		}
 
 		if (lp > caution_locus)
@@ -166,7 +167,7 @@ void XiServantCompletion::completed(const xic::ResultPtr& result)
 				XSTR_P(&client), XSTR_P(&me0), XSTR_P(&me1), XSTR_P(&server),
 				txid, XSTR_P(&service), XSTR_P(&method),
 				&q->context_xstr(), &q->args_xstr(),
-				status, &answer->args_xstr());
+				status, &a->args_xstr());
 		}
 	}
 }
