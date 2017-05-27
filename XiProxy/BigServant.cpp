@@ -389,7 +389,7 @@ xic::AnswerPtr BigServant::switchProxyLog(const xic::QuestPtr& quest, const xic:
 {
 	xic::QuestReader qr(quest);
 	std::string service = make_string(qr.wantXstr("service"));
-	RevServantPtr srv = find(service, false);
+	RevServantPtr srv = find(service, true);
 
 	xic::AnswerWriter aw;
 	if (srv)

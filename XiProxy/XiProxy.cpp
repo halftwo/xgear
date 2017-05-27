@@ -22,7 +22,7 @@
 #include <map>
 #include <string>
 
-#define XIPROXY_VERSION		"20170526.20170526.2200"
+#define XIPROXY_VERSION		"20170527.20170527.1000"
 
 static char build_info[] = "$build: XiProxy-" XIPROXY_VERSION " "__DATE__" "__TIME__" $";
 
