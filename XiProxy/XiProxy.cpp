@@ -24,7 +24,7 @@
 
 #define XIPROXY_VERSION		"20170527.20170527.1000"
 
-static char build_info[] = "$build: XiProxy-" XIPROXY_VERSION " "__DATE__" "__TIME__" $";
+static char build_info[] = "$build: XiProxy-" XIPROXY_VERSION " " __DATE__ " " __TIME__ " $";
 
 #define LOG_LEVEL_DEFAULT	1
 #define ULTRA_SLOW_MSEC_DEFAULT	66666

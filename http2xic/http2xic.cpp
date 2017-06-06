@@ -1,10 +1,9 @@
 #include "HttpHandler.h"
+#include "version.h"
 #include "Http2XicServant.h"
 #include "xic/Engine.h"
 
-#define HTTP2XIC_VERSION	"20170520.20170520.2300"
-
-static char build_info[] = "$build: http2xic-"HTTP2XIC_VERSION" "__DATE__" "__TIME__" $";
+static char build_info[] = "$build: http2xic-" HTTP2XIC_VERSION " " __DATE__ " " __TIME__ " $";
 
 static int run(int argc, char **argv, const xic::EnginePtr& engine)
 {

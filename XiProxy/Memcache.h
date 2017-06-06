@@ -4,10 +4,11 @@
 #include "xslib/XRefCount.h"
 #include "xslib/xstr.h"
 #include "xslib/HSequence.h"
+#include "xslib/UniquePtr.h"
 #include "MClient.h"
 #include <string>
 #include <vector>
-#include <memory>
+
 
 class Memcache;
 typedef XPtr<Memcache> MemcachePtr;
@@ -48,7 +49,7 @@ private:
 	XEvent::DispatcherPtr _dispatcher;
 	std::string _service;
 	std::vector<MClientPtr> _clients;
-	std::auto_ptr<HSequence> _hseq;
+	UniquePtr<HSequence> _hseq;
 	bool _shutdown;
 };
 

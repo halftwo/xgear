@@ -4,11 +4,12 @@
 #include "xslib/XRefCount.h"
 #include "xslib/xstr.h"
 #include "xslib/HSequence.h"
+#include "xslib/UniquePtr.h"
 #include "RedisClient.h"
 #include <string>
 #include <vector>
 #include <map>
-#include <memory>
+
 
 class RedisGroup;
 typedef XPtr<RedisGroup> RedisGroupPtr;
@@ -58,7 +59,7 @@ private:
 	XEvent::DispatcherPtr _dispatcher;
 	std::string _service;
 	std::vector<RedisClientPtr> _clients;
-	std::auto_ptr<HSequence> _hseq;
+	UniquePtr<HSequence> _hseq;
 	bool _shutdown;
 };
 

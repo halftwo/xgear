@@ -5,7 +5,7 @@
 
 #define IDMAN_VERSION	"20170520.20170520.2300"
 
-static char build_info[] = "$build: IdMan-"IDMAN_VERSION" "__DATE__" "__TIME__" $";
+static char build_info[] = "$build: IdMan-" IDMAN_VERSION " " __DATE__ " " __TIME__ " $";
 
 
 static bool check_singleton(const xic::EnginePtr& engine, const IdManServantPtr& idman)
