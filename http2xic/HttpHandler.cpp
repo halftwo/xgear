@@ -8,7 +8,7 @@ HttpHandler::HttpHandler(const xic::EnginePtr& engine)
 	: _daemon(NULL), _engine(engine)
 {
 	SettingPtr setting = _engine->setting();
-	std::string policy_file = setting->wantString("http.policy");
+	std::string policy_file = setting->wantPathname("http.policy");
 	_pm.reset(new PolicyManager(engine, policy_file));
 	_port = setting->getInt("http.port", 8888);
 	_connectionTimeout = setting->getInt("http.connection.timeout", 60);
