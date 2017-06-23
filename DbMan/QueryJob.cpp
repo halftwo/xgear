@@ -420,7 +420,7 @@ MQueryJob::MQueryJob(const xic::Current& current, const xic::QuestPtr& quest, co
 	_waiter = current.asynchronous();
 	_quest = quest;
 	xic::VDict args = _quest->args();
-	_kinds = args.getXstrVector("kinds");
+	args.getXstrSeq("kinds", _kinds);
 	if (_kinds.empty())
 	{
 		_kind = args.getXstr("kind");
@@ -434,7 +434,7 @@ MQueryJob::MQueryJob(const xic::Current& current, const xic::QuestPtr& quest, co
 		_kind = _kinds[0];
 	}
 
-	_sqls = _quest->args().wantBlobVector("sqls");
+	_quest->args().wantBlobSeq("sqls", _sqls);
 	size_t size = _sqls.size();
 	if (size == 0)
 		throw XERROR_MSG(xic::ParameterDataException, "no sql given");

@@ -215,7 +215,8 @@ XIC_METHOD(DbManServant, kindInfo)
 {
 	xic::VDict args = quest->args();
 	std::string kind = make_string(args.wantXstr("kind"));
-	std::vector<xstr_t> facets = args.wantXstrVector("facets");
+	std::vector<xstr_t> facets;
+	args.wantXstrSeq("facets", facets);
 	DBClusterPtr cluster = getCluster();
 	DBSetting::KindSetting *ks = cluster->dbsetting()->getKind(kind);
 	if (!ks)
@@ -250,7 +251,8 @@ XIC_METHOD(DbManServant, kindInfo)
 XIC_METHOD(DbManServant, kindVersions)
 {
 	xic::VDict args = quest->args();
-	std::vector<xstr_t> kinds = args.wantXstrVector("kinds");
+	std::vector<xstr_t> kinds;
+	args.wantXstrSeq("kinds", kinds);
 	DBClusterPtr cluster = getCluster();
 
 	xic::AnswerWriter aw;
