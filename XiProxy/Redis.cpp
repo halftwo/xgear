@@ -425,7 +425,8 @@ XIC_METHOD(Redis, get)
 XIC_METHOD(Redis, getMulti)
 {
 	xic::VDict args = quest->args();
-	std::vector<xstr_t> keys = args.wantXstrVector("keys");
+	std::vector<xstr_t> keys;
+	args.wantXstrSeq("keys", keys);
 
 	RGroupMgetCallbackPtr cb(new Callback_getMulti(current.asynchronous()));
 	_redisgroup->getMulti(cb, keys);

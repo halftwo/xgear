@@ -66,11 +66,12 @@ XIC_METHOD(Quickie, echo)
 XIC_METHOD(Quickie, hseq)
 {
 	xic::QuestReader qr(quest);
-	std::vector<xstr_t> buckets = qr.wantBlobVector("buckets");
+	std::vector<xstr_t> buckets;
+	qr.wantBlobSeq("buckets", buckets);
 	size_t size = buckets.size();
 
 	std::vector<int> weights;
-	qr.getInts("weights", weights);
+	qr.getIntSeq("weights", weights);
 	bool weighted = (weights.size() >= size);
 
 	size_t num = qr.getInt("num");

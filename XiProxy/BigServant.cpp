@@ -16,7 +16,7 @@
 
 
 BigServant::BigServant(const xic::EnginePtr& engine, const SettingPtr& setting)
-	: _engine(engine), _proxyConfig(setting->wantString("XiProxy.ListFile"))
+	: _engine(engine), _proxyConfig(setting->wantPathname("XiProxy.ListFile"))
 {
 	_hint = _map.end();
 

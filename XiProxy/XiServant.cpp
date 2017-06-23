@@ -351,8 +351,9 @@ void XiServant::switchProxyLog(xic::AnswerWriter& aw, const xic::QuestPtr& quest
 		_mtab->markAll(mark_all);
 	}
 
-	std::vector<xstr_t> marks = args.getXstrVector("marks");
-	std::vector<xstr_t> nomarks = args.getXstrVector("nomarks");
+	std::vector<xstr_t> marks, nomarks;
+	args.getXstrSeq("marks", marks);
+	args.getXstrSeq("nomarks", nomarks);
 
 	Lock lock(*this);
 	for (size_t i = 0; i < marks.size(); ++i)

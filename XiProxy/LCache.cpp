@@ -72,7 +72,8 @@ XIC_METHOD(LCache, remove)
 XIC_METHOD(LCache, getAll)
 {
 	xic::QuestReader qr(quest);
-	std::vector<xstr_t> keys = qr.wantXstrVector("keys");
+	std::vector<xstr_t> keys;
+	qr.wantXstrSeq("keys", keys);
 	long expire = qr.getInt("expire");
 
 	uint64_t after = expire ? rdtsc() - expire * cpu_frequency() : 0;

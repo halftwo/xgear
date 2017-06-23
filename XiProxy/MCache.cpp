@@ -428,7 +428,8 @@ XIC_METHOD(MCache, get)
 XIC_METHOD(MCache, getMulti)
 {
 	xic::VDict args = quest->args();
-	std::vector<xstr_t> keys = args.wantXstrVector("keys");
+	std::vector<xstr_t> keys;
+	args.wantXstrSeq("keys", keys);
 
 	for (size_t i = 0; i < keys.size(); ++i)
 	{
