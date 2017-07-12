@@ -5,10 +5,10 @@
 #include <sys/time.h>
 #include <list>
 
-#define MAX_MASTER_BUSY		256
-#define MAX_SLAVE_BUSY		64
+#define MASTER_QUEUE_SIZE	256
+#define SLAVE_QUEUE_SIZE	64
 #define DEFAULT_POOL_SIZE	4
-#define MAX_POOL_SIZE		32
+#define MAX_POOL_SIZE		256
 #define RECON_INTERVAL		(5*1000)
 #define PING_INTERVAL		(20*1000)
 
@@ -79,9 +79,10 @@ DBTeam::DBTeam(const XEvent::DispatcherPtr& dispatcher, const DBSettingPtr& dbse
 {
 	_masterPool.ss = ss;
 	_last_slave = 0;
-	_max_con = max_con <= 0 ? DEFAULT_POOL_SIZE
-		: max_con < MAX_POOL_SIZE ? max_con : MAX_POOL_SIZE;
 	_shutdown = false;
+	_max4all = max_con <= 0 ? DEFAULT_POOL_SIZE
+		: max_con < MAX_POOL_SIZE ? max_con : MAX_POOL_SIZE;
+	_max4read = (_max4all * 3 + 3) / 4;
 
 	for (size_t i = 0; i < ss->slaves.size(); ++i)
 	{
@@ -184,7 +185,7 @@ DBConnectionPtr DBTeam::acquireConnection(bool master)
 				which = 0;
 
 			ConPool *p = &_slavePools[which];
-			if (!p->error && p->ss->active && p->num_busy < _max_con)
+			if (!p->error && p->ss->active && p->num_busy < _max4all)
 			{
 				if (pool == NULL || pool->num_busy > p->num_busy)
 				{
@@ -213,7 +214,7 @@ DBConnectionPtr DBTeam::acquireConnection(bool master)
 	}
 
 	ConPool *p = &_masterPool;
-	if (!p->error && p->ss->active && (p->num_busy < _max_con/2 || (master && p->num_busy < _max_con)))
+	if (!p->error && p->ss->active && (p->num_busy < _max4read || (master && p->num_busy < _max4all)))
 	{
 		if (!p->cons.empty())
 		{
@@ -294,7 +295,7 @@ DBJobPtr DBTeam::_fetchJob(bool master)
 
 	if (!_slaveQueue.empty())
 	{
-		if (!master || _masterPool.num_busy < _max_con/2)
+		if (!master || _masterPool.num_busy < _max4read)
 		{
 			job = _slaveQueue.front();
 			_slaveQueue.pop_front();
@@ -314,18 +315,18 @@ void DBTeam::work(const DBJobPtr& job/*0*/, bool master)
 			Lock lock(*this);
 			if (master)
 			{
-				if (_masterQueue.size() < MAX_MASTER_BUSY)
+				if (_masterQueue.size() < MASTER_QUEUE_SIZE)
 					_masterQueue.push_back(job);
 				else
-					job->cancel(XERROR_FMT(XError, "MASTER BUSY, group=%d kind=%.*s",
+					job->cancel(XERROR_FMT(XError, "BUSY TO WRITE, group=%d kind=%.*s",
 						_masterPool.ss->sid, XSTR_P(&job->kind())));
 			}
 			else
 			{
-				if (_slaveQueue.size() < MAX_SLAVE_BUSY)
+				if (_slaveQueue.size() < SLAVE_QUEUE_SIZE)
 					_slaveQueue.push_back(job);
 				else
-					job->cancel(XERROR_FMT(XError, "SLAVE BUSY, group=%d kind=%.*s",
+					job->cancel(XERROR_FMT(XError, "BUSY TO READ, group=%d kind=%.*s",
 						_masterPool.ss->sid, XSTR_P(&job->kind())));
 			}
 		}

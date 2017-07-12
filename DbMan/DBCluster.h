@@ -98,7 +98,8 @@ private:
 	std::deque<DBJobPtr> _masterQueue;
 	std::deque<DBJobPtr> _slaveQueue;
 	int _last_slave;
-	int _max_con;
+	int _max4all;
+	int _max4read;
 	bool _shutdown;
 	std::string _charset;
 };
