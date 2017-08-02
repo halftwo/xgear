@@ -151,7 +151,7 @@ void RConnection::reconnect()
 	xstr_t xs;
 	xstr_delimit_char(&tmp, '+', &xs);
 	char host[256];
-	xstr_copy_to(&xs, host, sizeof(host));
+	xstr_copy_cstr(&xs, host, sizeof(host));
 	int port = xstr_atoi(&tmp);
 	if (port <= 0)
 		port = REDIS_PORT;

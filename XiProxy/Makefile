@@ -15,7 +15,7 @@ CXXFLAGS = -g -Wall -O2
 
 CPPFLAGS = -I. -I../include -I../knotty
 
-LIBS = -rdynamic -pthread -L../lib -L../knotty/lib -lutil -lxic -ldlog -lxs -lrt
+LIBS = -rdynamic -pthread -Wl,-static -L../lib -L../knotty/lib -lxic -ldlog -lxs -llz4 -Wl,-call_shared -lrt
 
 
 all: $(EXE)
