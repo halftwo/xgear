@@ -1,16 +1,16 @@
 #include "lz4codec.h"
-#include "xslib/lz4.h"
 #include "xslib/xnet.h"
-#include "xslib/xxhash.h"
+#include "xslib/jenkins.h"
+#include "lz4.h"
 
-#define MAGIC		0x1a7fb4f5
+#define MAGIC		0x2a7fb4f5
 #define	HEADER_SIZE	sizeof(struct myzip_header)	// should be 12
 
 struct myzip_header
 {
-	uint32_t magic;		// 0x1a7fb4f5
+	uint32_t magic;		// 0x2a7fb4f5
 	uint32_t length;	// length of the uncompressed data
-	uint32_t hash;		// xxhash of the compressed data
+	uint32_t hash;		// hash of the compressed data
 };
 
 int attempt_lz4_zip(ostk_t *ostk, const xstr_t& in, xstr_t& out)
@@ -23,13 +23,13 @@ int attempt_lz4_zip(ostk_t *ostk, const xstr_t& in, xstr_t& out)
 	void *sentry = ostk_alloc(ostk, 0);
 	int len = LZ4_compressBound(in.len) + HEADER_SIZE;
 	char *buf = (char *)ostk_alloc(ostk, len);
-	len = LZ4_compress((char *)in.data, buf + HEADER_SIZE, in.len);
+	len = LZ4_compress_default((char *)in.data, buf + HEADER_SIZE, in.len, len);
 	if (len >= 0)
 	{
 		len += HEADER_SIZE;
 		if (len < in.len * ZIP_SIZE_PERCENT)
 		{
-			uint32_t hash = XXH32(buf + HEADER_SIZE, len - HEADER_SIZE, 0);
+			uint32_t hash = jenkins_hash(buf + HEADER_SIZE, len - HEADER_SIZE, 0);
 			struct myzip_header *hdr = (struct myzip_header *)buf;
 			hdr->magic = xnet_m32(MAGIC);
 			hdr->length = xnet_m32(in.len);
@@ -64,7 +64,7 @@ int attempt_lz4_unzip(ostk_t* ostk, const xstr_t& in, xstr_t& out)
 
 	char *ibuf = (char *)in.data + HEADER_SIZE;
 	int ilen = in.len - HEADER_SIZE;
-	uint32_t hash = XXH32(ibuf, ilen, 0);
+	uint32_t hash = jenkins_hash(ibuf, ilen, 0);
 	if (hash != hdr.hash)
 		return -3;
 
