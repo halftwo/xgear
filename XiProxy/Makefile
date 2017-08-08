@@ -13,7 +13,7 @@ OBJS = XiProxy.o RevServant.o BigServant.o XiServant.o ProxyConfig.o \
 
 CXXFLAGS = -g -Wall -O2
 
-CPPFLAGS = -I. -I../include -I../knotty
+CPPFLAGS = -I. -I../include -I../knotty -I../knotty/include
 
 LIBS = -rdynamic -pthread -Wl,-static -L../lib -L../knotty/lib -lxic -ldlog -lxs -llz4 -Wl,-call_shared -lrt
 
