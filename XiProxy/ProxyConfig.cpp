@@ -114,7 +114,7 @@ bool ProxyConfig::reload()
 			xstr_t xs = XSTR_INIT((unsigned char *)buf, len);
 			xstr_trim(&xs);
 
-			if (xs.len == 0 || xs.data[0] == '#')
+			if (xs.len == 0 || xs.data[0] == '~')
 				continue;
 
 			if (xs.data[0] == '@')

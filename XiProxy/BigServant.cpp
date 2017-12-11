@@ -147,7 +147,7 @@ RevServantPtr BigServant::_load(const std::string& service)
 	{
 		xstr_t xs = XSTR_CXX(service);
 		xstr_t id;
-		xstr_delimit_char(&xs, '#', &id);
+		xstr_delimit_char(&xs, '~', &id);
 
 		if (pd.type == InternalProxy)
 		{
