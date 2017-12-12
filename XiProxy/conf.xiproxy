@@ -14,7 +14,7 @@ XiProxy.Service.Delay = 0
 XiProxy.Cache.NumberMax = 64ki
 XiProxy.Cache.ExpireMax = 86400
 
-XiProxy.Http.Port = 8888
+XiProxy.Http.Port = 9988
 XiProxy.Http.Connection.Timeout = 60
 XiProxy.Http.Connection.Limit = 1024
 XiProxy.Http.ThreadPool.Size = 2

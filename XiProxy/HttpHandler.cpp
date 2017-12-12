@@ -12,7 +12,7 @@ HttpHandler::HttpHandler(const xic::EnginePtr& engine, const xic::AdapterPtr& ad
 	: _daemon(NULL), _engine(engine), _adapter(adapter)
 {
 	SettingPtr setting = _engine->setting();
-	_port = setting->getInt("XiProxy.Http.Port", 8888);
+	_port = setting->getInt("XiProxy.Http.Port", 9988);
 	_connectionTimeout = setting->getInt("XiProxy.Http.Connection.Timeout", 60);
 	_connectionLimit = setting->getInt("XiProxy.Http.Connection.Limit", 1024);
 	_threadPoolSize = setting->getInt("XiProxy.Http.ThreadPool.Size", 2);
@@ -177,6 +177,12 @@ static int querystring_iterator(void *cls, enum MHD_ValueKind kind, const char *
 	return MHD_YES;
 }
 
+typedef struct
+{
+	xbuf_t xb;
+	bool processed;
+} scene_t;
+
 int HttpHandler::process(struct MHD_Connection *con, const char *url, 
 		const char *method, const char *version,
 		const char *data, size_t *data_size, void **ptr)
@@ -201,56 +207,66 @@ int HttpHandler::process(struct MHD_Connection *con, const char *url,
 					size = 4096;
 			}
 
-			xbuf_t *xb = XS_CALLOC_ONE(xbuf_t);
-			if (!xb)
+			scene_t *sn = XS_CALLOC_ONE(scene_t);
+			if (!sn)
 			{
 				return http_respond_internal_server_error(con);
 			}
 
-			*ptr = xb;
+			*ptr = sn;
 			if (size > 0)
 			{
-				xb->data = (unsigned char *)malloc(size);
-				if (!xb->data)
+				sn->xb.data = (unsigned char *)malloc(size);
+				if (!sn->xb.data)
 				{
 					return http_respond_internal_server_error(con);
 				}
-				memcpy(xb->data, data, *data_size);
-				xb->capacity = size;
-				xb->len = *data_size;
+				memcpy(sn->xb.data, data, *data_size);
+				sn->xb.capacity = size;
+				sn->xb.len = *data_size;
 				*data_size = 0;
 			}
 		}
 		else if (*data_size)
 		{
-			xbuf_t *xb = (xbuf_t *)*ptr;
-			ssize_t size = xb->len + *data_size;
-			if (size > xb->capacity)
+			scene_t *sn = (scene_t *)*ptr;
+			ssize_t size = sn->xb.len + *data_size;
+			if (size > sn->xb.capacity)
 			{
-				unsigned char *data = (unsigned char *)realloc(xb->data, size);
+				unsigned char *data = (unsigned char *)realloc(sn->xb.data, size);
 				if (!data)
 					return http_respond_internal_server_error(con);
 
-				xb->data = data;
-				xb->capacity = size;
+				sn->xb.data = data;
+				sn->xb.capacity = size;
 			}
 
-			memcpy(xb->data + xb->len, data, *data_size);
-			xb->len = size;
+			memcpy(sn->xb.data + sn->xb.len, data, *data_size);
+			sn->xb.len = size;
 			*data_size = 0;
-		}
-		else if (((xbuf_t*)*ptr)->len)
-		{
-			xbuf_t *xb = (xbuf_t *)*ptr;
-			xic::QuestPtr q = xic::Quest::create();
-			int rc = json_to_vbs(xb->data, xb->len, rope_xio.write, q->args_rope(), 0);
-			if (rc < 0)
-				return http_respond_bad_request(con, "Posted data is not a valid JSON string");
-			return _request(con, url, q);
 		}
 		else
 		{
-			return http_respond_bad_request(con, "No data posted");
+			scene_t *sn = (scene_t *)*ptr;
+			if (!sn->processed)
+			{
+				sn->processed = true;
+				if (sn->xb.len)
+				{
+					xic::QuestPtr q = xic::Quest::create();
+					int rc = json_to_vbs(sn->xb.data, sn->xb.len, rope_xio.write, q->args_rope(), 0);
+					free(sn->xb.data);
+					sn->xb.data = NULL;
+					sn->xb.len = 0;
+					if (rc < 0)
+						return http_respond_bad_request(con, "Posted data is not a valid JSON string");
+					return _request(con, url, q);
+				}
+				else
+				{
+					return http_respond_bad_request(con, "No data posted");
+				}
+			}
 		}
 	}
 	else if (strcmp(method, MHD_HTTP_METHOD_GET) == 0)
@@ -270,11 +286,10 @@ int HttpHandler::process(struct MHD_Connection *con, const char *url,
 
 void HttpHandler::complete(struct MHD_Connection *con, void **ptr, enum MHD_RequestTerminationCode toe)
 {
-	xbuf_t *xb = (xbuf_t *)(*ptr);
-	if (xb)
+	scene_t *sn = (scene_t *)(*ptr);
+	if (sn)
 	{
-		free(xb->data);
-		free(xb);
+		free(sn);
 	}
 }
 
