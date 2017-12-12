@@ -230,12 +230,12 @@ public:
 };
 typedef XPtr<Collector> CollectorPtr;
 
-class FakeWaiter: public xic::WaiterI
+class SalvoFakeWaiter: public xic::WaiterI
 {
 	CollectorPtr _collector;
 	size_t _idx;
 public:
-	FakeWaiter(const xic::CurrentI& r, const CollectorPtr& col, size_t idx)
+	SalvoFakeWaiter(const xic::CurrentI& r, const CollectorPtr& col, size_t idx)
 		: xic::WaiterI(r), _collector(col), _idx(idx)
 	{
 	}
@@ -248,13 +248,13 @@ public:
 	}
 };
 
-class FakeCurrent: public xic::CurrentI
+class SalvoFakeCurrent: public xic::CurrentI
 {
 	CollectorPtr _collector;
 	size_t _idx;
 public:
-	FakeCurrent(const xic::Current& c, const xic::QuestPtr& q, const CollectorPtr& col, size_t idx)
-		: CurrentI(c.adapter, c.con.get(), q.get()), _collector(col), _idx(idx)
+	SalvoFakeCurrent(const xic::Current& c, const xic::QuestPtr& q, const CollectorPtr& col, size_t idx)
+		: CurrentI(c.con.get(), q.get()), _collector(col), _idx(idx)
 	{
 	}
 
@@ -262,7 +262,7 @@ public:
 	{
 		if (!_waiter)
 		{
-			_waiter.reset(new FakeWaiter(*this, _collector, _idx)); 
+			_waiter.reset(new SalvoFakeWaiter(*this, _collector, _idx)); 
 		}
 		return _waiter;
 	}
@@ -292,7 +292,7 @@ xic::AnswerPtr BigServant::salvo(const xic::QuestPtr& quest, const xic::Current&
 
 			if (!srv)
 			{
-				srv = current.adapter->findServant(sxx);
+				srv = current.con->getAdapter()->findServant(sxx);
 				if (!srv)
 					throw XERROR_MSG(xic::ServiceNotFoundException, sxx);
 			}
@@ -304,12 +304,12 @@ xic::AnswerPtr BigServant::salvo(const xic::QuestPtr& quest, const xic::Current&
 			q->setService(s);
 			q->setContext(ctx);
 
-			FakeCurrent fake_current(current, q, collector, idx);
+			SalvoFakeCurrent fake_current(current, q, collector, idx);
 			answer = srv->process(q, fake_current);
 		}
 		catch (std::exception& ex)
 		{
-			answer = xic::except2answer(ex, s, m, current.adapter->endpoints());
+			answer = xic::except2answer(ex, s, m, current.con->endpoint());
 		}
 
 		if (answer != xic::ASYNC_ANSWER)

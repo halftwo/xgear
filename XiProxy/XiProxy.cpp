@@ -1,3 +1,4 @@
+#include "HttpHandler.h"
 #include "RevServant.h"
 #include "BigServant.h"
 #include "XiServant.h"
@@ -22,7 +23,7 @@
 #include <map>
 #include <string>
 
-#define XIPROXY_VERSION		"171212.171212.10"
+#define XIPROXY_VERSION		"171212.171212.20"
 
 static char build_info[] = "$build: XiProxy-" XIPROXY_VERSION " " __DATE__ " " __TIME__ " $";
 
@@ -90,6 +91,7 @@ xic::AnswerPtr XiProxyCtrl::process(const xic::QuestPtr& quest, const xic::Curre
 static int run(int argc, char **argv, const xic::EnginePtr& engine)
 {
 	srandom(time(NULL) ^ getpid());
+	engine->throb(build_info);
 	SettingPtr setting = engine->setting();
 
 	uint32_t ip;
@@ -121,6 +123,7 @@ static int run(int argc, char **argv, const xic::EnginePtr& engine)
 	xic::AdapterPtr adapter = engine->createAdapter();
 	if (setting->getString("XiProxy.ListFile").empty())
 		throw XERROR_MSG(XError, "XiProxy.ListFile is required to be set in configuration");
+
 	BigServantPtr bigsrv(new BigServant(engine, setting));
 	XPtr<Dlog> dlogger(new Dlog());
 	adapter->addServant("Dlog", dlogger);
@@ -128,9 +131,19 @@ static int run(int argc, char **argv, const xic::EnginePtr& engine)
 	adapter->addServant("Quickie", new Quickie(bigsrv));
 	adapter->addServant("XiProxyCtrl", new XiProxyCtrl(bigsrv));
 	adapter->setDefaultServant(bigsrv);
+
+	HttpHandlerPtr httpHandler;
+	if (setting->getInt("XiProxy.Http.Port") > 0)
+		httpHandler = new HttpHandler(engine, adapter);
+
 	adapter->activate();
-	engine->throb(build_info);
+	if (httpHandler)
+		httpHandler->start();
+
 	engine->waitForShutdown();
+
+	if (httpHandler)
+		httpHandler->stop();
 	return 0;
 }
 

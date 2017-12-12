@@ -1,21 +1,23 @@
 # This file is just a example.
 # DONT use it directly.
 
-Tester @ tcp+localhost+5555
+Demo @ tcp+localhost+5555
 	@ tcp+localhost+55555
 
-DbMan 	@ tcp+localhost+12321
+Demo~one @ tcp+localhost+5555
 
-DbMan~r -lb:random @ tcp+localhost+12321
-	@ tcp+localhost+1221
+Demo~another @ tcp+localhost+55555
 
-DbMan~h -lb:hash @ tcp+localhost+12321
-	@ tcp+localhost+1221
+Demo~r -lb:random @ tcp+localhost+5555
+	@ tcp+localhost+55555
 
-DbMan~test @ tcp+localhost+12321
-	@ tcp+localhost+1221
+Demo~h -lb:hash @ tcp+localhost+5555
+	@ tcp+localhost+55555
 
-!MCache~1 = 127.0.0.1+11212
+DbMan @ tcp+localhost+12321
+
+
+!MCache = 127.0.0.1+11212
 	 = 127.0.0.1+11213
 	 = 127.0.0.1+11214
 
