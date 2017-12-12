@@ -267,6 +267,9 @@ int HttpHandler::process(struct MHD_Connection *con, const char *url,
 					return http_respond_bad_request(con, "No data posted");
 				}
 			}
+
+			dlog("XXX", "Can't reach here!");
+			return MHD_NO;
 		}
 	}
 	else if (strcmp(method, MHD_HTTP_METHOD_GET) == 0)
