@@ -260,6 +260,8 @@ int HttpHandler::process(struct MHD_Connection *con, const char *url,
 					sn->xb.len = 0;
 					if (rc < 0)
 						return http_respond_bad_request(con, "Posted data is not a valid JSON string");
+					xic::ContextPtr ctx = xic::ContextBuilder("HTTP2XIC", "JSON").build();
+					q->setContext(ctx);
 					return _request(con, url, q);
 				}
 				else
@@ -277,6 +279,8 @@ int HttpHandler::process(struct MHD_Connection *con, const char *url,
 		xic::QuestWriter qw("");
 		MHD_get_connection_values(con, MHD_GET_ARGUMENT_KIND, querystring_iterator, &qw);
 		xic::QuestPtr q = qw.take();
+		xic::ContextPtr ctx = xic::ContextBuilder("HTTP2XIC", "QUERYSTRING").build();
+		q->setContext(ctx);
 		return _request(con, url, q);
 	}
 	else
