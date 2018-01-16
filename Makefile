@@ -1,6 +1,6 @@
 
 
-dirs = XiProxy http2xic DbMan
+dirs = XiProxy DbMan
 
 all:
 	for x in $(dirs); do (cd $$x; make); done
