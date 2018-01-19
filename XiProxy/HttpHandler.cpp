@@ -111,6 +111,7 @@ void HttpFakeWaiter::response(const xic::AnswerPtr& answer, bool trace)
 	std::string out = ss.str();
 
 	MHD_Response *response = MHD_create_response_from_buffer(out.length(), (void *)out.data(), MHD_RESPMEM_MUST_COPY);
+	MHD_add_response_header(response, MHD_HTTP_HEADER_SERVER, "XiP");
 	MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, "application/json");
 	int code = MHD_HTTP_OK;
 	if (answer->status())
