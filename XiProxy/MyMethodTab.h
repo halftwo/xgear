@@ -13,7 +13,7 @@ struct MyMethodTab
 		NodeType(const xstr_t& name);
 		NodeType* hash_next;
 	public:
-		mutable xatomic64_t ncall;
+		mutable xatomiclong_t ncall;
 		uint32_t hash;
 		uint32_t nlen;
 		bool mark;

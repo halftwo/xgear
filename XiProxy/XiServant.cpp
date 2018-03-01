@@ -190,7 +190,7 @@ xic::AnswerPtr XiServant::process(const xic::QuestPtr& quest, const xic::Current
 
 	if (node)
 	{
-		xatomic64_inc(&node->ncall);
+		xatomiclong_inc(&node->ncall);
 		if (node->mark)
 			current.logIt(true);
 	}
@@ -275,7 +275,7 @@ void XiServant::call_end(const xstr_t& method, int usec, bool add)
 		if (add)
 		{
 			MyMethodTab::NodeType *node = _mtab->getOrAdd(method);
-			xatomic64_inc(&node->ncall);
+			xatomiclong_inc(&node->ncall);
 		}
 	}
 }
@@ -332,7 +332,7 @@ void XiServant::getInfo(xic::VDictWriter& dw)
 	xic::VDictWriter dw2 = dw.kvdict("counter");
 	for (node = NULL; (node = _mtab->next(node)) != NULL; )
 	{
-		int64_t ncall = xatomic64_get(&node->ncall);
+		long ncall = xatomiclong_get(&node->ncall);
 		dw2.kv(node->name, ncall);
 	}
 }
@@ -369,7 +369,7 @@ void XiServant::switchProxyLog(xic::AnswerWriter& aw, const xic::QuestPtr& quest
 		node = _mtab->find(method);
 		if (node)
 		{
-			if (xatomic64_get(&node->ncall))
+			if (xatomiclong_get(&node->ncall))
 				node->mark = false;
 			else
 				_mtab->remove_node(node);

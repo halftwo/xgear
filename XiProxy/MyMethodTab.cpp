@@ -7,7 +7,7 @@
 MyMethodTab::NodeType::NodeType(const xstr_t& key)
 {
 	mark = false;
-	xatomic64_set(&ncall, 0);
+	xatomiclong_set(&ncall, 0);
 	hash = jenkins_hash(key.data, key.len, 0);
 	nlen = key.len;
 	memcpy(name, key.data, key.len);
