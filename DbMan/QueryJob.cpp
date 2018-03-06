@@ -302,7 +302,7 @@ SQueryJob::SQueryJob(const xic::Current& current, const xic::QuestPtr& quest, co
 
 	if (!maywrite && _master)
 	{
-		xlog(2, "reading sql goes to master db, sql=%.*s", XSTR_P(&_sql));
+		xlog(XLOG_INFO, "reading sql goes to master db, sql=%.*s", XSTR_P(&_sql));
 	}
 }
 
@@ -541,7 +541,7 @@ MQueryJob::MQueryJob(const xic::Current& current, const xic::QuestPtr& quest, co
 
 		if (!maywrite && _master)
 		{
-			xlog(2, "reading sql goes to master db, sql=%.*s", XSTR_P(&sql));
+			xlog(XLOG_INFO, "reading sql goes to master db, sql=%.*s", XSTR_P(&sql));
 		}
 
 		if (!check_and_rewrite_sql(ostk, sql, kind, ks->table_prefix))

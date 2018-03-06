@@ -262,7 +262,7 @@ void MySQLdb::query(ResultCB *cb, const char *sql, size_t size, const char *db_n
 	lock.release();
 
 	int64_t usec = (rdtsc() - start_tsc) * 1000000 / cpu_frequency();
-	xlog(1, "DB_QUERY time=%d.%06d db=%s:%u/%s #SQL=%.*s",
+	xlog(XLOG_DEBUG, "DB_QUERY time=%d.%06d db=%s:%u/%s #SQL=%.*s",
 		int(usec/1000000), int(usec%1000000),
 		(_host ? _host : ""), _port, (db_name ? db_name : _db ? _db : ""), (int)size, sql);
 
@@ -388,7 +388,7 @@ MYSQL_RES *MySQLdb::query(const char *sql, size_t size, const char *db_name, Res
 	lock.release();
 
 	int64_t usec = (rdtsc() - start_tsc) * 1000000 / cpu_frequency();
-	xlog(1, "DB_QUERY time=%d.%06d db=%s:%u/%s #SQL=%.*s",
+	xlog(XLOG_DEBUG, "DB_QUERY time=%d.%06d db=%s:%u/%s #SQL=%.*s",
 		int(usec/1000000), int(usec%1000000),
 		(_host ? _host : ""), _port, (db_name ? db_name : _db ? _db : ""), (int)size, sql);
 
