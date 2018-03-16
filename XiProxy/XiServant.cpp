@@ -149,7 +149,7 @@ void XiServantCompletion::completed(const xic::ResultPtr& result)
 			}
 
 			xdlog(vbs_xfmt, NULL, "XP_EXCEPT", NULL,
-				"T=%d.%03d con=%.*s/%.*s,%.*s/%.*s %jd Q=%.*s::%.*s C%p{>VBS_RAW<} A=%d %p{>VBS_RAW<}",
+				"T=%d.%03d con=%.*s/%.*s^%.*s/%.*s %jd Q=%.*s::%.*s C%p{>VBS_RAW<} A=%d %p{>VBS_RAW<}",
 				(int)(used_ms/1000), (int)(used_ms%1000),
 				XSTR_P(&client), XSTR_P(&me0), XSTR_P(&me1), XSTR_P(&server),
 				txid, XSTR_P(&service), XSTR_P(&method),
@@ -162,7 +162,7 @@ void XiServantCompletion::completed(const xic::ResultPtr& result)
 			*lp++ = '/';
 			*lp = 0;
 			xdlog(vbs_xfmt, NULL, "XP_CAUTION", caution_locus,
-				"T=%d.%03d con=%.*s/%.*s,%.*s/%.*s %jd Q=%.*s::%.*s C%p{>VBS_RAW<} %p{>VBS_RAW<} A=%d %p{>VBS_RAW<}",
+				"T=%d.%03d con=%.*s/%.*s^%.*s/%.*s %jd Q=%.*s::%.*s C%p{>VBS_RAW<} %p{>VBS_RAW<} A=%d %p{>VBS_RAW<}",
 				(int)(used_ms/1000), (int)(used_ms%1000),
 				XSTR_P(&client), XSTR_P(&me0), XSTR_P(&me1), XSTR_P(&server),
 				txid, XSTR_P(&service), XSTR_P(&method),
