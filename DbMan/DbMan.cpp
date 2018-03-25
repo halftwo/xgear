@@ -1,6 +1,6 @@
 #include "DbManServant.h"
 
-#define DBMAN_VERSION	"170520.170712.15"
+#define DBMAN_VERSION	"170520.180325.20"
 
 static char build_info[] = "$build: DbMan-" DBMAN_VERSION " " __DATE__ " " __TIME__ " $";
 

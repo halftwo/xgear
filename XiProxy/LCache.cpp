@@ -48,7 +48,7 @@ XIC_METHOD(LCache, set)
 
 	RKey rkey(key);
 	bool ok = true;
-	if (value->type != VBS_NULL)
+	if (value->kind != VBS_NULL)
 	{
 		RData d(rdtsc(), RD_LCACHE, *value);
 		ok = _rcache->replace(rkey, d);

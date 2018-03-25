@@ -452,7 +452,7 @@ public:
 	virtual bool completed(const vbs_list_t& replies)
 	{
 		vbs_data_t *d0 = replies.first ? &replies.first->value : NULL;
-                if (d0 && d0->type == VBS_STRING && xstr_equal_cstr(&d0->d_xstr, "+OK"))
+                if (d0 && d0->kind == VBS_STRING && xstr_equal_cstr(&d0->d_xstr, "+OK"))
 			return true;
 
 		edlog(vbs_xfmt, "RDS_AUTH", "server=%s, %p{>VBS_DATA<}", _client->server().c_str(), d0);

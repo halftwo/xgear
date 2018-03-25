@@ -12,7 +12,7 @@ CXXCPPFLAGS = -I. -I../include -I../knotty -I/usr/local/include
 
 EXES = DbMan IdMan
 
-OBJS_DBPOOL = DBSetting.o MySQLdb.o DBCluster.o QueryJob.o type4vbs.o CallerKind.o SQLResult.o
+OBJS_DBPOOL = DBSetting.o MySQLdb.o DBCluster.o QueryJob.o kind4vbs.o CallerKind.o SQLResult.o
 
 LIB_DBPOOL = libdbpool.a
 

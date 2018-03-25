@@ -68,7 +68,7 @@ xstr_t** SQLResult::fields()
 			vbs_litem_t *ent = _fields_list->first;
 			for (int i = 0; i < _num_fields; ++i)
 			{
-				if (ent->value.type != VBS_STRING)
+				if (ent->value.kind != VBS_STRING)
 					throw XERROR_MSG(xic::ParameterTypeException, "The element in SQLResult row LIST is not STRING");
 
 				_fields[i] = &ent->value.d_xstr;
@@ -87,8 +87,8 @@ xstr_t** SQLResult::fetch_row()
 		if (!_current_cols)
 			_current_cols = (xstr_t**)ostk_alloc(_answer->ostk(), _num_fields * sizeof(xstr_t*));
 
-		if (_current_row->value.type != VBS_LIST)
-			throw XERROR_MSG(xic::ParameterTypeException, "SQLResult row type is not LIST");
+		if (_current_row->value.kind != VBS_LIST)
+			throw XERROR_MSG(xic::ParameterTypeException, "SQLResult row kind is not LIST");
 
 		vbs_list_t *l = _current_row->value.d_list;
 		_current_row = _current_row->next;
@@ -99,7 +99,7 @@ xstr_t** SQLResult::fetch_row()
 		vbs_litem_t *ent = l->first;
 		for (int i = 0; i < _num_fields; ++i)
 		{
-			if (ent->value.type != VBS_STRING && ent->value.type != VBS_BLOB)
+			if (ent->value.kind != VBS_STRING && ent->value.kind != VBS_BLOB)
 				throw XERROR_MSG(xic::ParameterTypeException, "The element in SQLResult row LIST is not STRING or BLOB");
 
 			_current_cols[i] = &ent->value.d_xstr;
@@ -117,8 +117,8 @@ vbs_data_t** SQLResult::fetch_row_data()
 		if (!_current_data_cols)
 			_current_data_cols = (vbs_data_t**)ostk_alloc(_answer->ostk(), _num_fields * sizeof(vbs_data_t*));
 
-		if (_current_row->value.type != VBS_LIST)
-			throw XERROR_MSG(xic::ParameterTypeException, "SQLResult row type is not LIST");
+		if (_current_row->value.kind != VBS_LIST)
+			throw XERROR_MSG(xic::ParameterTypeException, "SQLResult row kind is not LIST");
 
 		vbs_list_t *l = _current_row->value.d_list;
 		_current_row = _current_row->next;
@@ -141,8 +141,8 @@ vbs_list_t* SQLResult::fetch_row_list()
 {
 	if (_current_row)
 	{
-		if (_current_row->value.type != VBS_LIST)
-			throw XERROR_MSG(xic::ParameterTypeException, "SQLResult row type is not LIST");
+		if (_current_row->value.kind != VBS_LIST)
+			throw XERROR_MSG(xic::ParameterTypeException, "SQLResult row kind is not LIST");
 
 		vbs_list_t *l = _current_row->value.d_list;
 		_current_row = _current_row->next;

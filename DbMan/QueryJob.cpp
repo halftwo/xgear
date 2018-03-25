@@ -1,5 +1,5 @@
 #include "QueryJob.h"
-#include "type4vbs.h"
+#include "kind4vbs.h"
 #include "xslib/divmod.h"
 #include "xslib/strbuf.h"
 #include "xslib/ScopeGuard.h"
@@ -333,13 +333,13 @@ void SQueryJob::doit(const DBConnectionPtr& con)
 			MYSQL_FIELD *fds = mysql_fetch_fields(res);
 			int num_fds = mysql_num_fields(res);
 			int num_rows = mysql_num_rows(res);
-			uint8_t *types = (uint8_t *)(num_rows > 0 ? alloca(num_fds * sizeof(uint8_t)) : NULL);
+			uint8_t *kinds = (uint8_t *)(num_rows > 0 ? alloca(num_fds * sizeof(uint8_t)) : NULL);
 			xic::VListWriter lw = aw.paramVList("fields");
 			for (int i = 0; i < num_fds; ++i)
 			{
 				lw.v(fds[i].name);
-				if (types)
-					types[i] = type4vbs(&fds[i]);
+				if (kinds)
+					kinds[i] = kind4vbs(&fds[i]);
 			}
 
 			lw = aw.paramVList("rows");
@@ -359,13 +359,13 @@ void SQueryJob::doit(const DBConnectionPtr& con)
 					{
 						llw.vnull();
 					}
-					else if (types[i] == VBS_BLOB)
+					else if (kinds[i] == VBS_BLOB)
 					{
 						llw.vblob(xs);
 					}
 					else if (_convert)
 					{
-						if (types[i] == VBS_INTEGER)
+						if (kinds[i] == VBS_INTEGER)
 						{
 							xstr_t end;
 							intmax_t v = xstr_to_integer(&xs, &end, 0);
@@ -374,7 +374,7 @@ void SQueryJob::doit(const DBConnectionPtr& con)
 							else
 								llw.v(v);
 						}
-						else if (types[i] == VBS_FLOATING)
+						else if (kinds[i] == VBS_FLOATING)
 						{
 							xstr_t end;
 							double v = xstr_to_double(&xs, &end);
@@ -383,7 +383,7 @@ void SQueryJob::doit(const DBConnectionPtr& con)
 							else
 								llw.v(v);
 						}
-						else if (types[i] == VBS_DECIMAL)
+						else if (kinds[i] == VBS_DECIMAL)
 						{
 							xstr_t end;
 							decimal64_t v;
@@ -605,12 +605,12 @@ void MQueryJob::process(MYSQL *mysql)
 			int num_fds = mysql_num_fields(res);
 			int num_rows = mysql_num_rows(res);
 			xic::VListWriter llw = dw.kvlist("fields");
-			uint8_t *types = (uint8_t *)(num_rows > 0 ? alloca(num_fds * sizeof(uint8_t)) : NULL);
+			uint8_t *kinds = (uint8_t *)(num_rows > 0 ? alloca(num_fds * sizeof(uint8_t)) : NULL);
 			for (int i = 0; i < num_fds; ++i)
 			{
 				llw.v(fds[i].name);
-				if (types)
-					types[i] = type4vbs(&fds[i]);
+				if (kinds)
+					kinds[i] = kind4vbs(&fds[i]);
 			}
 
 			llw = dw.kvlist("rows");
@@ -630,13 +630,13 @@ void MQueryJob::process(MYSQL *mysql)
 					{
 						l3w.vnull();
 					}
-					else if (types[i] == VBS_BLOB)
+					else if (kinds[i] == VBS_BLOB)
 					{
 						l3w.vblob(xs);
 					}
 					else if (_convert)
 					{
-						if (types[i] == VBS_INTEGER)
+						if (kinds[i] == VBS_INTEGER)
 						{
 							xstr_t end;
 							intmax_t v = xstr_to_integer(&xs, &end, 0);
@@ -645,7 +645,7 @@ void MQueryJob::process(MYSQL *mysql)
 							else
 								l3w.v(v);
 						}
-						else if (types[i] == VBS_FLOATING)
+						else if (kinds[i] == VBS_FLOATING)
 						{
 							xstr_t end;
 							double v = xstr_to_double(&xs, &end);
@@ -654,7 +654,7 @@ void MQueryJob::process(MYSQL *mysql)
 							else
 								l3w.v(v);
 						}
-						else if (types[i] == VBS_DECIMAL)
+						else if (kinds[i] == VBS_DECIMAL)
 						{
 							xstr_t end;
 							decimal64_t v;

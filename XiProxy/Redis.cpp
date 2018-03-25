@@ -163,12 +163,12 @@ struct Callback_tcall: public Callback_default
 			vbs_data_t *d = &ent->value;
 			if (n == 0)
 			{
-				if (d->type != VBS_STRING || !xstr_equal_cstr(&d->d_xstr, "+OK"))
+				if (d->kind != VBS_STRING || !xstr_equal_cstr(&d->d_xstr, "+OK"))
 					throw XERROR_MSG(XError, "invalid reply for MULTI cmd");
 			}
 			else if (n == _num + 1)
 			{
-				if (d->type != VBS_LIST)
+				if (d->kind != VBS_LIST)
 					throw XERROR_MSG(XError, "invalid reply for EXEC cmd");
 
 				result = d->d_list;
@@ -185,7 +185,7 @@ struct Callback_tcall: public Callback_default
 				break;
 
 			const vbs_data_t *d = &ent->value;
-			if (d->type != VBS_STRING || !xstr_equal_cstr(&d->d_xstr, "+QUEUED"))
+			if (d->kind != VBS_STRING || !xstr_equal_cstr(&d->d_xstr, "+QUEUED"))
 			{
 				lw.v(d);
 			}
@@ -215,7 +215,7 @@ struct Callback_set: public Callback_default
 	virtual void handle(xic::AnswerWriter& aw, const vbs_list_t& ls)
 	{
 		vbs_data_t *d0 = ls.first ? &ls.first->value : NULL;
-		if (d0 && d0->type == VBS_STRING && xstr_equal_cstr(&d0->d_xstr, "+OK"))
+		if (d0 && d0->kind == VBS_STRING && xstr_equal_cstr(&d0->d_xstr, "+OK"))
 			aw.param("ok", d0->d_bool);
 		else
 			aw.param("ok", false);
@@ -232,7 +232,7 @@ struct Callback_delete: public Callback_default
 	virtual void handle(xic::AnswerWriter& aw, const vbs_list_t& ls)
 	{
 		vbs_data_t *d0 = ls.first ? &ls.first->value : NULL;
-		if (d0 && d0->type == VBS_INTEGER && d0->d_int > 0)
+		if (d0 && d0->kind == VBS_INTEGER && d0->d_int > 0)
 			aw.param("ok", true);
 		else
 			aw.param("ok", false);
@@ -249,7 +249,7 @@ struct Callback_inc_dec: public Callback_default
 	virtual void handle(xic::AnswerWriter& aw, const vbs_list_t& ls)
 	{
 		vbs_data_t *d0 = ls.first ? &ls.first->value : NULL;
-		if (d0 && d0->type == VBS_INTEGER)
+		if (d0 && d0->kind == VBS_INTEGER)
 		{
 			aw.param("ok", true);
 			aw.param("value", d0->d_int);
@@ -269,7 +269,7 @@ struct Callback_get: public Callback_default
 	virtual void handle(xic::AnswerWriter& aw, const vbs_list_t& ls)
 	{
 		const vbs_data_t *d0 = ls.first ? &ls.first->value : NULL;
-		if (d0 && d0->type == VBS_BLOB)
+		if (d0 && d0->kind == VBS_BLOB)
 		{
 			aw.param("value", d0);
 		}

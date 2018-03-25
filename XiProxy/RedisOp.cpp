@@ -146,7 +146,7 @@ static void one_arg(rope_t *rope, bool b)
 
 static void one_arg(rope_t *rope, const vbs_data_t& d)
 {
-	switch (d.type)
+	switch (d.kind)
 	{
 	case VBS_STRING:
 		one_arg(rope, d.d_xstr);
@@ -176,7 +176,7 @@ static void one_cmd(rope_t* rope, const vbs_list_t* cmd)
 	rope_printf(rope, "*%zu\r\n", cmd->count);
 
 	vbs_litem_t *ent = cmd->first;
-	if (ent->value.type != VBS_STRING || ent->value.d_xstr.len == 0)
+	if (ent->value.kind != VBS_STRING || ent->value.d_xstr.len == 0)
 		throw XERROR_MSG(XError, "invalid cmd name");
 
 	xstr_t& arg0 = ent->value.d_xstr;
@@ -220,7 +220,7 @@ RO_ncall::RO_ncall(const RedisResultCallbackPtr& cb, const vbs_list_t* cmds)
 
 	for (vbs_litem_t *cmd_ent = cmds->first; cmd_ent; cmd_ent = cmd_ent->next)
 	{
-		if (cmd_ent->value.type != VBS_LIST)
+		if (cmd_ent->value.kind != VBS_LIST)
 			throw XERROR_MSG(XError, "invalid cmd");
 
 		vbs_list_t *cmd = cmd_ent->value.d_list;
@@ -241,7 +241,7 @@ RO_tcall::RO_tcall(const RedisResultCallbackPtr& cb, const vbs_list_t* cmds)
 
 	for (vbs_litem_t *cmd_ent = cmds->first; cmd_ent; cmd_ent = cmd_ent->next)
 	{
-		if (cmd_ent->value.type != VBS_LIST)
+		if (cmd_ent->value.kind != VBS_LIST)
 			throw XERROR_MSG(XError, "invalid cmd");
 
 		vbs_list_t *cmd = cmd_ent->value.d_list;

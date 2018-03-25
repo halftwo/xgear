@@ -148,7 +148,7 @@ public:
 		for (vbs_litem_t *ent = ls.first; ent && i < num; ++i, ent = ent->next)
 		{
 			vbs_data_t* d = &ent->value;
-			if (d->type == VBS_BLOB)
+			if (d->kind == VBS_BLOB)
 			{
 				_values.insert(std::make_pair(keys[i], d->d_blob));
 			}
@@ -190,7 +190,7 @@ public:
 
 	virtual bool completed(const vbs_list_t& ls)
 	{
-		if (ls.first && ls.first->value.type == VBS_LIST)
+		if (ls.first && ls.first->value.kind == VBS_LIST)
 			_callback->values(_keys, *ls.first->value.d_list);
 		else
 			_empty_result();

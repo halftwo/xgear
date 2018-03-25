@@ -1,6 +1,6 @@
-#include "type4vbs.h"
+#include "kind4vbs.h"
 
-vbs_type_t type4vbs(MYSQL_FIELD *fd)
+vbs_kind_t kind4vbs(MYSQL_FIELD *fd)
 {
 	switch (fd->type)
 	{
