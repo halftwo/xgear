@@ -20,6 +20,7 @@ class HttpHandler: virtual public XRefCount
 	int _connectionTimeout;
 	int _connectionLimit;
 	int _threadPoolSize;
+	bool _convertInteger;
 
 public:
 	HttpHandler(const xic::EnginePtr& engine, const xic::AdapterPtr& adapter);

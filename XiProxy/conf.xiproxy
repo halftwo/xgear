@@ -18,6 +18,7 @@ XiProxy.Http.Port = 9988
 XiProxy.Http.Connection.Timeout = 60
 XiProxy.Http.Connection.Limit = 1024
 XiProxy.Http.ThreadPool.Size = 2
+XiProxy.Http.ConvertInteger = true
 
 
 xic.timeout.message = 66000

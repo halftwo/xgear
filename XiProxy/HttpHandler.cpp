@@ -6,6 +6,8 @@
 #include "xslib/xbuf.h"
 #include "xslib/vbs_json.h"
 #include "xslib/urlparse.h"
+#include <errno.h>
+#include <stdlib.h>
 
 
 HttpHandler::HttpHandler(const xic::EnginePtr& engine, const xic::AdapterPtr& adapter)
@@ -16,6 +18,7 @@ HttpHandler::HttpHandler(const xic::EnginePtr& engine, const xic::AdapterPtr& ad
 	_connectionTimeout = setting->getInt("XiProxy.Http.Connection.Timeout", 60);
 	_connectionLimit = setting->getInt("XiProxy.Http.Connection.Limit", 1024);
 	_threadPoolSize = setting->getInt("XiProxy.Http.ThreadPool.Size", 2);
+	_convertInteger = setting->getBool("XiProxy.Http.ConvertInteger", false);
 }
 
 HttpHandler::~HttpHandler()
@@ -171,10 +174,38 @@ int HttpHandler::_request(struct MHD_Connection *con, const char *url, const xic
 	return MHD_YES;
 }
 
+struct QueryStringStage {
+	bool convertInteger;
+	xic::QuestWriter *qw;
+
+	QueryStringStage(bool ci_, xic::QuestWriter *qw_)
+		: convertInteger(ci_), qw(qw_)
+	{
+	}
+};
+
 static int querystring_iterator(void *cls, enum MHD_ValueKind kind, const char *key, const char *value)
 {
-	xic::QuestWriter *qw = (xic::QuestWriter*)cls;
-	qw->param(key, value);
+	QueryStringStage *stage = (QueryStringStage*)cls;
+	bool is_integer = false;
+	if (stage->convertInteger)
+	{
+		if (isdigit(value[0]) || (value[0] == '-' && isdigit(value[1])))
+		{
+			errno = 0;
+			char *end;
+			long long n = strtoll(value, &end, 10);
+
+			if (*end == 0 && errno == 0)
+			{
+				is_integer = true;
+				stage->qw->param(key, n);
+			}
+		}
+	}
+
+	if (!is_integer)
+		stage->qw->param(key, value);
 	return MHD_YES;
 }
 
@@ -278,7 +309,8 @@ int HttpHandler::process(struct MHD_Connection *con, const char *url,
 	else if (strcmp(method, MHD_HTTP_METHOD_GET) == 0)
 	{
 		xic::QuestWriter qw("");
-		MHD_get_connection_values(con, MHD_GET_ARGUMENT_KIND, querystring_iterator, &qw);
+		QueryStringStage stage(_convertInteger, &qw);
+		MHD_get_connection_values(con, MHD_GET_ARGUMENT_KIND, querystring_iterator, &stage);
 		xic::QuestPtr q = qw.take();
 		xic::ContextPtr ctx = xic::ContextBuilder("HTTP2XIC", "QUERYSTRING").build();
 		q->setContext(ctx);
