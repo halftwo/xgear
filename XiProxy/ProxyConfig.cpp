@@ -108,21 +108,42 @@ bool ProxyConfig::reload()
 		int len;
 		char *buf = NULL;
 		size_t buf_size = 0;
-
+		bool item_started = false;
+		int lineno = 0;
 		while ((len = getline(&buf, &buf_size, fp)) > 0)
 		{
+			lineno++;
 			xstr_t xs = XSTR_INIT((unsigned char *)buf, len);
 			xstr_trim(&xs);
 
-			if (xs.len == 0 || xs.data[0] == '~')
+			if (xs.len == 0)
+			{
+				item_started = false;
 				continue;
+			}
+			if (xs.data[0] == '#')
+			{
+				continue;
+			}
 
 			if (xs.data[0] == '@')
 			{
+				if (!item_started)
+				{
+					dlog("WARNING", "Unknown proxy identity at line %d in file %s", lineno, _listfile.c_str());
+					continue;
+				}
+
 				pd.value += ' ' + make_string(xs);
 			}
 			else if (xs.data[0] == '=')
 			{
+				if (!item_started)
+				{
+					dlog("WARNING", "Unknown proxy identity at line %d in file %s", lineno, _listfile.c_str());
+					continue;
+				}
+
 				xs.data[0] = ' ';
 				pd.value += make_string(xs);
 			}
@@ -133,10 +154,15 @@ bool ProxyConfig::reload()
 				xstr_t k, v;
 				xstr_advance(&xs, 1);
 				if (xstr_key_value(&xs, '=', &k, &v) < 0 || k.len == 0)
+				{
+					dlog("WARNING", "Internal proxy line must have '=' at line %d in file %s", lineno, _listfile.c_str());
 					continue;
+				}
+
 				key = make_string(k);
 				pd.value = make_string(v);
 				pd.type = InternalProxy;
+				item_started = true;
 			}
 			else
 			{
@@ -144,7 +170,10 @@ bool ProxyConfig::reload()
 
 				xstr_t k, v;
 				if (xstr_key_value(&xs, '@', &k, &v) < 0 || k.len == 0)
+				{
+					dlog("WARNING", "External proxy line must have '@' (endpoint) at line %d in file %s", lineno, _listfile.c_str());
 					continue;
+				}
 
 				xstr_t identity;
 				xstr_token_space(&k, &identity);
@@ -152,6 +181,7 @@ bool ProxyConfig::reload()
 				pd.value = v.len ? "@" + make_string(v) : "";
 				pd.option = make_string(k);
 				pd.type = ExternalProxy;
+				item_started = true;
 			}
 		}
 		free(buf);
