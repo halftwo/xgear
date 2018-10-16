@@ -47,17 +47,49 @@ XIC_METHOD(LCache, set)
 	const vbs_data_t* value = qr.want_data("value");
 
 	RKey rkey(key);
-	bool ok = true;
 	if (value->kind != VBS_NULL)
 	{
 		RData d(rdtsc(), RD_LCACHE, *value);
-		ok = _rcache->replace(rkey, d);
+		_rcache->replace(rkey, d);
 	}
 	else
 	{
 		_rcache->remove(rkey);
 	}
-	return xic::AnswerWriter()("ok", ok);
+	return xic::AnswerWriter();
+}
+
+XIC_METHOD(LCache, get_or_set)
+{
+	xic::QuestReader qr(quest);
+	const xstr_t& key = qr.wantXstr("key");
+	const vbs_data_t* value = qr.want_data("value");
+	long expire = qr.getInt("expire");
+
+	RKey rkey(key);
+	RData d = _rcache->use(rkey);
+	long age = d ? (rdtsc() - d.ctime()) / cpu_frequency() : LONG_MAX;
+
+	xic::AnswerWriter aw;
+	if (d && (!expire || age < expire) && d.type() == RD_LCACHE)
+	{
+		aw.paramStanza("old_value", d.data(), d.length());
+		aw.param("age", age);
+	}
+	else
+	{
+		aw.paramNull("old_value");
+		if (value->kind != VBS_NULL)
+		{
+			RData newdata(rdtsc(), RD_LCACHE, *value);
+			_rcache->replace(rkey, newdata);
+		}
+		else
+		{
+			_rcache->remove(rkey);
+		}
+	}
+	return aw;
 }
 
 XIC_METHOD(LCache, remove)

@@ -7,6 +7,7 @@
 #define LCACHE_CMDS		\
 	CMD(set)		\
 	CMD(get)		\
+	CMD(get_or_set)		\
 	CMD(getAll)		\
 	CMD(plus)		\
 	CMD(remove)		\

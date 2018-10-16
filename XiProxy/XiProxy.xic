@@ -24,7 +24,12 @@ LCache
 <= { value^%X; ?age^%i }
 
 => set { key^%s; value^%X }
-<= { ok^%t }
+<= {}
+
+// get if the key exists, otherwise set it
+// return old_value
+=> get_or_set { key^%s; value^%X; ?expire^%i }
+<= { old_value^%X; ?age^%i }
 
 => remove { key^%s }
 <= { ok^%t }
