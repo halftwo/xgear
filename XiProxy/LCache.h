@@ -8,6 +8,7 @@
 	CMD(set)		\
 	CMD(get)		\
 	CMD(get_or_set)		\
+	CMD(get_and_set)	\
 	CMD(getAll)		\
 	CMD(plus)		\
 	CMD(remove)		\

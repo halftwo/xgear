@@ -73,12 +73,12 @@ XIC_METHOD(LCache, get_or_set)
 	xic::AnswerWriter aw;
 	if (d && (!expire || age < expire) && d.type() == RD_LCACHE)
 	{
-		aw.paramStanza("old_value", d.data(), d.length());
+		aw.paramStanza("value", d.data(), d.length());
 		aw.param("age", age);
 	}
 	else
 	{
-		aw.paramNull("old_value");
+		aw.paramNull("value");
 		if (value->kind != VBS_NULL)
 		{
 			RData newdata(rdtsc(), RD_LCACHE, *value);
@@ -88,6 +88,42 @@ XIC_METHOD(LCache, get_or_set)
 		{
 			_rcache->remove(rkey);
 		}
+	}
+	return aw;
+}
+
+XIC_METHOD(LCache, get_and_set)
+{
+	xic::QuestReader qr(quest);
+	const xstr_t& key = qr.wantXstr("key");
+	const vbs_data_t* value = qr.want_data("value");
+	long expire = qr.getInt("expire");
+
+	RKey rkey(key);
+	RData d = _rcache->use(rkey);
+	long age = d ? (rdtsc() - d.ctime()) / cpu_frequency() : LONG_MAX;
+
+	// get
+	xic::AnswerWriter aw;
+	if (d && (!expire || age < expire) && d.type() == RD_LCACHE)
+	{
+		aw.paramStanza("value", d.data(), d.length());
+		aw.param("age", age);
+	}
+	else
+	{
+		aw.paramNull("value");
+	}
+
+	// set
+	if (value->kind != VBS_NULL)
+	{
+		RData newdata(rdtsc(), RD_LCACHE, *value);
+		_rcache->replace(rkey, newdata);
+	}
+	else
+	{
+		_rcache->remove(rkey);
 	}
 	return aw;
 }
