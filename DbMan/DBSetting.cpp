@@ -191,6 +191,7 @@ void DBSetting::load(MySQLdb *db, bool strict)
 				}
 
 				strncpy(kind, knd, sizeof(kind));
+				kind[sizeof(kind)-1] = 0;
 				expected_no = 0;
 				std::map<std::string, KindSetting*>::iterator iter = _kinds.find(kind);
 				if (iter != _kinds.end())
