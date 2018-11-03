@@ -1,7 +1,7 @@
 #include "IdManServant.h"
 #include "SQLResult.h"
 #include "dlog/dlog.h"
-#include "xslib/xbase32.h"
+#include "xslib/xbase57.h"
 #include "xslib/rdtsc.h"
 #include "xslib/xformat.h"
 #include "xslib/ScopeGuard.h"
@@ -284,8 +284,8 @@ XIC_METHOD(IdManServant, ctrl)
 	uuid_t uuid;
 	uuid_generate_random(uuid);
 
-	char token[XBASE32_LEN(sizeof(uuid)) + 1];
-	xbase32_encode(token, uuid, sizeof(uuid));
+	char token[XBASE57_ENCODED_LEN(sizeof(uuid)) + 1];
+	xbase57_encode(token, uuid, sizeof(uuid));
 
 	if (t <= 0 || t > 60)
 	{
