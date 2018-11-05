@@ -23,14 +23,14 @@ XIC_METHOD(LCache, get)
 {
 	xic::QuestReader qr(quest);
 	const xstr_t& key = qr.wantXstr("key");
-	long expire = qr.getInt("expire");
+	long maxage = qr.getInt("maxage");
 
 	RKey rkey(key);
 	RData d = _rcache->use(rkey);
 	long age = d ? (rdtsc() - d.ctime()) / cpu_frequency() : LONG_MAX;
 
 	xic::AnswerWriter aw;
-	if (d && (!expire || age < expire) && d.type() == RD_LCACHE)
+	if (d && (!maxage || age < maxage) && d.type() == RD_LCACHE)
 	{
 		aw.paramStanza("value", d.data(), d.length());
 		aw.param("age", age);
@@ -64,14 +64,14 @@ XIC_METHOD(LCache, get_or_set)
 	xic::QuestReader qr(quest);
 	const xstr_t& key = qr.wantXstr("key");
 	const vbs_data_t* value = qr.want_data("value");
-	long expire = qr.getInt("expire");
+	long maxage = qr.getInt("maxage");
 
 	RKey rkey(key);
 	RData d = _rcache->use(rkey);
 	long age = d ? (rdtsc() - d.ctime()) / cpu_frequency() : LONG_MAX;
 
 	xic::AnswerWriter aw;
-	if (d && (!expire || age < expire) && d.type() == RD_LCACHE)
+	if (d && (!maxage || age < maxage) && d.type() == RD_LCACHE)
 	{
 		aw.paramStanza("value", d.data(), d.length());
 		aw.param("age", age);
@@ -97,7 +97,7 @@ XIC_METHOD(LCache, get_and_set)
 	xic::QuestReader qr(quest);
 	const xstr_t& key = qr.wantXstr("key");
 	const vbs_data_t* value = qr.want_data("value");
-	long expire = qr.getInt("expire");
+	long maxage = qr.getInt("maxage");
 
 	RKey rkey(key);
 	RData d = _rcache->use(rkey);
@@ -105,7 +105,7 @@ XIC_METHOD(LCache, get_and_set)
 
 	// get
 	xic::AnswerWriter aw;
-	if (d && (!expire || age < expire) && d.type() == RD_LCACHE)
+	if (d && (!maxage || age < maxage) && d.type() == RD_LCACHE)
 	{
 		aw.paramStanza("value", d.data(), d.length());
 		aw.param("age", age);
@@ -142,12 +142,20 @@ XIC_METHOD(LCache, getAll)
 	xic::QuestReader qr(quest);
 	std::vector<xstr_t> keys;
 	qr.wantXstrSeq("keys", keys);
-	long expire = qr.getInt("expire");
+	long maxage = qr.getInt("maxage");
 
-	uint64_t after = expire ? rdtsc() - expire * cpu_frequency() : 0;
-	size_t size = keys.size();
+	uint64_t after = 0;
+	if (maxage > 0)
+	{
+		uint64_t now = rdtsc();
+		after = now - maxage * cpu_frequency();
+		if (after > now)
+			after = 0;
+	}
+
 	xic::AnswerWriter aw;
 	xic::VDictWriter dw = aw.paramVDict("items");
+	size_t size = keys.size();
 	for (size_t i = 0; i < size; ++i)
 	{
 		const xstr_t& key = keys[i];
@@ -166,11 +174,18 @@ XIC_METHOD(LCache, plus)
 	xic::QuestReader qr(quest);
 	const xstr_t& key = qr.wantXstr("key");
 	intmax_t value = qr.wantInt("value");
-	long expire = qr.getInt("expire");
+	long maxage = qr.getInt("maxage");
+
+	uint64_t now = rdtsc();
+	uint64_t after = 0;
+	if (maxage > 0)
+	{
+		after = now - maxage * cpu_frequency();
+		if (after > now)
+			after = 0;
+	}
 
 	RKey rkey(key);
-	uint64_t now = rdtsc();
-	uint64_t after = expire ? now - expire * cpu_frequency() : 0;
 	value = _rcache->plus(rkey, value, now, after);
 	return xic::AnswerWriter()("value", value);
 }

@@ -20,29 +20,29 @@ XiProxyCtrl
 LCache
 ======
 
-=> get { key^%s; ?expire^%i }
+=> get { key^%s; ?maxage^%i }
 <= { value^%X; ?age^%i }
 
 => set { key^%s; value^%X }
 <= {}
 
-// get if the key exists and does not expire, otherwise set it
+// get if the key exists and is younger than the specified maxage, otherwise set it
 // return the old value
-=> get_or_set { key^%s; value^%X; ?expire^%i }
+=> get_or_set { key^%s; value^%X; ?maxage^%i }
 <= { value^%X; ?age^%i }
 
 // set the key to value
-// return the old value if it exits and does not expire
-=> get_and_set { key^%s; value^%X; ?expire^%i }
+// return the old value if it exits and is younger than the specified maxage
+=> get_and_set { key^%s; value^%X; ?maxage^%i }
 <= { value^%X; ?age^%i }
 
 => remove { key^%s }
 <= { ok^%t }
 
-=> getAll { keys^[%s]; ?expire^%i }
+=> getAll { keys^[%s]; ?maxage^%i }
 <= { items^{%s^%X} }
 
-=> plus { key^%s; value^%i; ?expire^%i }
+=> plus { key^%s; value^%i; ?maxage^%i }
 <= { value^%i }
 
 
