@@ -21,6 +21,7 @@ class HttpHandler: virtual public XRefCount
 	int _connectionLimit;
 	int _threadPoolSize;
 	bool _convertInteger;
+	bool _logIt;
 
 public:
 	HttpHandler(const xic::EnginePtr& engine, const xic::AdapterPtr& adapter);
@@ -37,7 +38,7 @@ public:
 			enum MHD_RequestTerminationCode toe);
 
 private:
-	int _request(struct MHD_Connection *con, const char *url, const xic::QuestPtr& q);
+	int _request(struct MHD_Connection *con, const xic::QuestPtr& q, const char *http_method, const char *url);
 };
 
 
