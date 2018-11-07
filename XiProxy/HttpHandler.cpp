@@ -7,6 +7,7 @@
 #include "xslib/vbs_json.h"
 #include "xslib/urlparse.h"
 #include "xslib/msec.h"
+#include "xslib/xnet.h"
 #include <errno.h>
 #include <stdlib.h>
 
@@ -77,16 +78,16 @@ class HttpFakeCurrent: public xic::CurrentI
 	friend class HttpFakeWaiter;
 	struct MHD_Connection *_con;
 	char *_http_method;
-	char *_http_url;
+	int _http_port;
 	bool _synchronized;
 	bool _logIt;
 public:
-	HttpFakeCurrent(struct MHD_Connection *con, const xic::QuestPtr& q, const char *http_method, const char *http_url, bool logIt)
+	HttpFakeCurrent(struct MHD_Connection *con, const xic::QuestPtr& q, const char *http_method, int port, bool logIt)
 		: CurrentI(NULL, q.get()), _con(con)
 	{
 		ostk_t *ostk = _quest->ostk();
 		_http_method = ostk_strdup(ostk, http_method);
-		_http_url = ostk_strdup(ostk, http_url);
+		_http_port = port;
 		_synchronized = false;
 		_logIt = logIt;
 	}
@@ -104,7 +105,7 @@ class HttpFakeWaiter: public xic::WaiterI
 	struct MHD_Connection *_con;
 	int64_t _start_ms;
 	char *_http_method;
-	char *_http_url;
+	int _http_port;
 	bool _synchronized;
 	bool _logIt;
 public:
@@ -113,7 +114,7 @@ public:
 	{
 		_start_ms = exact_mono_msec();
 		_http_method = r._http_method;
-		_http_url = r._http_url;
+		_http_port = r._http_port;
 		_synchronized = r._synchronized;
 		_logIt = r._logIt;
 	}
@@ -157,6 +158,7 @@ void HttpFakeWaiter::response(const xic::AnswerPtr& answer, bool trace)
 
 	if (_logIt)
 	{
+		char peer_ip[XNET_IP6STR_SIZE];
 		char locus[32];
 		char *p = locus;
 		*p++ = '/';
@@ -164,12 +166,20 @@ void HttpFakeWaiter::response(const xic::AnswerPtr& answer, bool trace)
 		*p++ = '/';
 		*p = 0;
 
+		const MHD_ConnectionInfo *ci = MHD_get_connection_info(_con, MHD_CONNECTION_INFO_CLIENT_ADDRESS);
+		int peer_port = xnet_sockaddr_to_ip(ci->client_addr, peer_ip, sizeof(peer_ip));
+		if (peer_port < 0)
+		{
+			peer_port = 0;
+			peer_ip[0] = 0;
+		}
+
 		int64_t used_ms = exact_mono_msec() - _start_ms;
 		xic::Quest *q =  _quest.get();
 		xdlog(vbs_xfmt, NULL, "XP_HTTP", locus,
-			"T=%d.%03d %s %s Q=%.*s::%.*s C%p{>VBS_RAW<} %p{>VBS_RAW<} A=%d %p{>VBS_RAW<}",
+			"T=%d.%03d %d/%s+%d %s Q=%.*s::%.*s C%p{>VBS_RAW<} %p{>VBS_RAW<} A=%d %p{>VBS_RAW<}",
 			(int)(used_ms / 1000), (int)(used_ms % 1000),
-			_http_method, _http_url, 
+			_http_port, peer_ip, peer_port, _http_method,
 			XSTR_P(&_service), XSTR_P(&_method),
 			&q->context_xstr(), &q->args_xstr(),
 			answer->status(), &answer->args_xstr());
@@ -197,7 +207,7 @@ int HttpHandler::_request(struct MHD_Connection *con, const xic::QuestPtr& q, co
 
 	MHD_suspend_connection(con);
 	xic::AnswerPtr answer;
-	HttpFakeCurrent fake_current(con, q, http_method, url, _logIt);
+	HttpFakeCurrent fake_current(con, q, http_method, _port, _logIt);
 	try {
 		xic::ServantPtr srv = _adapter->findServant(make_string(service));
 		if (!srv)
