@@ -50,7 +50,7 @@ void HttpHandler::start()
 	if (_daemon)
 		throw XERROR_MSG(XError, "MHD_Daemon already started");
 
-	_daemon = MHD_start_daemon(MHD_USE_EPOLL_INTERNALLY_LINUX_ONLY | MHD_USE_SUSPEND_RESUME,
+	_daemon = MHD_start_daemon(MHD_USE_EPOLL_INTERNALLY | MHD_USE_SUSPEND_RESUME,
 			_port,
 			NULL, NULL,
 			&answer_to_connection, this,
