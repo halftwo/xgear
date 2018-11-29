@@ -27,7 +27,7 @@ public:
 	virtual xic::AnswerPtr process(const xic::QuestPtr& quest, const xic::Current& current);
 
 	virtual void getInfo(xic::VDictWriter& dw);
-	void switchProxyLog(xic::AnswerWriter& aw, const xic::QuestPtr& quest);
+	void markProxyMethods(xic::AnswerWriter& aw, const xic::QuestPtr& quest);
 
 	void call_end(const xstr_t& method, int usec, bool add);
 	const RCachePtr& rcache() const		{ return _rcache; }

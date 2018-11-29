@@ -337,7 +337,7 @@ void XiServant::getInfo(xic::VDictWriter& dw)
 	}
 }
 
-void XiServant::switchProxyLog(xic::AnswerWriter& aw, const xic::QuestPtr& quest)
+void XiServant::markProxyMethods(xic::AnswerWriter& aw, const xic::QuestPtr& quest)
 {
 	MyMethodTab::NodeType *node;
 	bool mark_all = _mtab->markAll();

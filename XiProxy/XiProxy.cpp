@@ -71,9 +71,9 @@ xic::AnswerPtr XiProxyCtrl::process(const xic::QuestPtr& quest, const xic::Curre
 	{
 		return _bigsrv->getProxyInfo(quest, current);
 	}
-	else if (xstr_equal_cstr(&method, "switchProxyLog"))
+	else if (xstr_equal_cstr(&method, "markProxyMethods"))
 	{
-		return _bigsrv->switchProxyLog(quest, current);
+		return _bigsrv->markProxyMethods(quest, current);
 	}
 	else if (xstr_equal_cstr(&method, "clearCache"))
 	{

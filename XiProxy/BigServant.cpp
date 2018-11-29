@@ -385,7 +385,7 @@ xic::AnswerPtr BigServant::getProxyInfo(const xic::QuestPtr& quest, const xic::C
 	return aw;
 }
 
-xic::AnswerPtr BigServant::switchProxyLog(const xic::QuestPtr& quest, const xic::Current& current)
+xic::AnswerPtr BigServant::markProxyMethods(const xic::QuestPtr& quest, const xic::Current& current)
 {
 	xic::QuestReader qr(quest);
 	std::string service = make_string(qr.wantXstr("service"));
@@ -396,7 +396,7 @@ xic::AnswerPtr BigServant::switchProxyLog(const xic::QuestPtr& quest, const xic:
 	{
 		XiServantPtr x = XiServantPtr::cast(srv);
 		if (x)
-			x->switchProxyLog(aw, quest);
+			x->markProxyMethods(aw, quest);
 	}
 	return aw;
 }
