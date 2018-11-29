@@ -3,6 +3,7 @@
 #include "xslib/hseq.h"
 #include "xslib/crc.h"
 #include "xslib/ScopeGuard.h"
+#include "dlog/dlog.h"
 #include <vector>
 
 xic::MethodTab::PairType Quickie::_funpairs[] = {
@@ -24,20 +25,13 @@ Quickie::~Quickie()
 XIC_METHOD(Quickie, time)
 {
 	time_t now;
-	struct tm tm;
 	char buf[32];
 	xic::AnswerWriter aw;
 
 	time(&now);
 	aw.param("time", now);
-
-	gmtime_r(&now, &tm);
-	strftime(buf, sizeof(buf), "%Y%m%d-%H%M%S", &tm);
-	aw.param("utc", buf);
-
-	localtime_r(&now, &tm);
-	strftime(buf, sizeof(buf), "%Y%m%d-%H%M%S", &tm);
-	aw.param("local", buf);
+	aw.param("utc", dlog_utc_time_str(now, buf));
+	aw.param("local", dlog_local_time_str(now, buf));
 
 	return aw;
 }
