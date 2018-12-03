@@ -41,7 +41,7 @@ create table variable_setting (
 );
 
 
-insert into variable_setting(name, value) values('revision', 'Anything is OK');
+insert into variable_setting(name, value) values('revision', 'The Initial Revision Not Changed Yet');
 --- When anything of the kind_setting, table_setting, server_setting is changed, execute:
 --- UPDATE variable_setting SET value='Change This to Another Value' WHERE name='revision';
 
