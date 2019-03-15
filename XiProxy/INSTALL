@@ -1,0 +1,8 @@
+
+
+XiProxy 依赖 libmicrohttpd 较新版本，而系统本身自带的libmicrohttpd版本通常非常老旧。
+如果编译提示相关错误，请从以下网站
+	https://ftp.gnu.org/gnu/libmicrohttpd/
+下载安装 libmicrohttpd 0.9.60 以上版本。
+
+
