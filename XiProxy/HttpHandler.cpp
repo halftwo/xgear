@@ -30,7 +30,7 @@ HttpHandler::~HttpHandler()
 		stop();
 }
 
-static int answer_to_connection (void *cls, struct MHD_Connection *con,
+static MHD_Result answer_to_connection (void *cls, struct MHD_Connection *con,
 		const char *url, const char *method, const char *version, 
 		const char *data, size_t *data_size, void **con_cls)
 {
@@ -186,7 +186,7 @@ void HttpFakeWaiter::response(const xic::AnswerPtr& answer, bool trace)
 	}
 }
 
-int HttpHandler::_request(struct MHD_Connection *con, const xic::QuestPtr& q, const char *http_method, const char *url)
+MHD_Result HttpHandler::_request(struct MHD_Connection *con, const xic::QuestPtr& q, const char *http_method, const char *url)
 {
 	xstr_t tmp = XSTR_C(url);
 	struct urlpart part;
@@ -244,7 +244,7 @@ struct QueryStringStage {
 	}
 };
 
-static int querystring_iterator(void *cls, enum MHD_ValueKind kind, const char *key, const char *value)
+static MHD_Result querystring_iterator(void *cls, enum MHD_ValueKind kind, const char *key, const char *value)
 {
 	QueryStringStage *stage = (QueryStringStage*)cls;
 	bool is_integer = false;
@@ -292,7 +292,7 @@ typedef struct
 	xbuf_t xb;
 } scene_t;
 
-int HttpHandler::process(struct MHD_Connection *con, const char *url, 
+MHD_Result HttpHandler::process(struct MHD_Connection *con, const char *url, 
 		const char *method, const char *version,
 		const char *data, size_t *data_size, void **ptr)
 {

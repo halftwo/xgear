@@ -30,7 +30,7 @@ public:
 	void start();
 	void stop();
 
-	int process(struct MHD_Connection *connection, const char *url, 
+	MHD_Result process(struct MHD_Connection *connection, const char *url, 
 			const char *method, const char *version,
 			const char *data, size_t *data_size, void **ptr);
 
@@ -38,7 +38,7 @@ public:
 			enum MHD_RequestTerminationCode toe);
 
 private:
-	int _request(struct MHD_Connection *con, const xic::QuestPtr& q, const char *http_method, const char *url);
+	MHD_Result _request(struct MHD_Connection *con, const xic::QuestPtr& q, const char *http_method, const char *url);
 };
 
 
