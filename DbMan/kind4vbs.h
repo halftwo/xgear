@@ -2,7 +2,7 @@
 #define KIND4VBS_H_
 
 #include "xslib/vbs_pack.h"
-#include <mysql/mysql.h>
+#include <mariadb/mysql.h>
 
 
 vbs_kind_t kind4vbs(MYSQL_FIELD *fd);

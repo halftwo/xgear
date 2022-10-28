@@ -3,7 +3,7 @@
 #include "xslib/xlog.h"
 #include "xslib/ScopeGuard.h"
 
-#define IDMAN_VERSION	"170520.170614.18"
+#define IDMAN_VERSION	"170520.22102821"
 
 static char build_info[] = "$build: IdMan-" IDMAN_VERSION " " __DATE__ " " __TIME__ " $";
 

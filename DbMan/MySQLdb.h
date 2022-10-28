@@ -4,8 +4,8 @@
 #include "xslib/XLock.h"
 #include "xslib/XError.h"
 #include "xslib/Enforce.h"
-#include <mysql/mysql.h>
-#include <mysql/errmsg.h>
+#include <mariadb/mysql.h>
+#include <mariadb/errmsg.h>
 #include <stdint.h>
 #include <string>
 

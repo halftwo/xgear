@@ -17,7 +17,7 @@ OBJS_DBPOOL = DBSetting.o MySQLdb.o DBCluster.o QueryJob.o kind4vbs.o CallerKind
 LIB_DBPOOL = libdbpool.a
 
 
-MYSQL_LIBS = -L/usr/lib64/mysql -lmysqlclient_r 
+MYSQL_LIBS = -lmariadbclient
 
 LIBS = -rdynamic -pthread -L../lib -L../knotty/lib -ldlog -lxic -lxs $(MYSQL_LIBS) -lrt
 
