@@ -23,7 +23,7 @@
 #include <map>
 #include <string>
 
-#define XIPROXY_VERSION		"181107.181129.21"
+#define XIPROXY_VERSION		"22102820"
 
 static char build_info[] = "$build: XiProxy-" XIPROXY_VERSION " " __DATE__ " " __TIME__ " $";
 
@@ -43,7 +43,7 @@ int xp_delay_msec = 0;
 
 char *xp_get_time_str(time_t t, char *buf)
 {
-	return dlog_local_time_str(t, buf);
+	return dlog_local_time_str(buf, t, true);
 }
 
 

@@ -30,8 +30,7 @@ XIC_METHOD(Quickie, time)
 
 	time(&now);
 	aw.param("time", now);
-	aw.param("utc", dlog_utc_time_str(now, buf));
-	aw.param("local", dlog_local_time_str(now, buf));
+	aw.param("local", dlog_local_time_str(buf, now, true));
 
 	return aw;
 }

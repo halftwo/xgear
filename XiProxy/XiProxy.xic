@@ -65,7 +65,7 @@ Quickie
 =======
 
 => time {}
-<= { time^%i; utc^%s; local^%s }
+<= { time^%i; local^%s }
 
 =~ sink {...}
 
